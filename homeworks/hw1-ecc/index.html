@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework 1 · Public-Key Cryptography | Statistics Notebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <a href="../../index.html" class="brand">
+        <span class="brand-mark">σ²</span>
+        <span class="brand-text">Statistics<br><small>Notebook</small></span>
+      </a>
+      <nav class="side-nav" aria-label="Homework sections">
+        <a href="#homework">Homework</a>
+        <a href="#theory">Theory</a>
+        <a href="#curve">The toy curve</a>
+        <a href="#compute">Private → public key</a>
+        <a href="#visual">Visualisation</a>
+        <a href="#stats">Statistics</a>
+        <a href="#secp">Real secp256k1</a>
+        <a href="#discussion">Discussion</a>
+        <a href="#research">Research</a>
+      </nav>
+      <div class="side-meta">
+        <span class="meta-label">Homework</span>
+        <strong>1 · Cryptography</strong>
+        <span class="meta-label">Student</span>
+        <strong>Fikiremariyam Babu Yalew</strong>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+        <span class="icon-sun">☀</span><span class="icon-moon">☾</span>
+      </button>
+    </aside>
+
+    <main class="content">
+
+      <header class="hw-header">
+        <a href="../../index.html#homeworks" class="back">← All homeworks</a>
+        <p class="eyebrow">Homework 1 · Cryptography</p>
+        <h1>Private key → public key</h1>
+        <p class="lead">Elliptic-curve scalar multiplication as a one-way function: a toy curve, the algorithm step by step, and a statistical look at its outputs.</p>
+      </header>
+
+      <!-- 01 ASSIGNMENT -->
+      <section id="homework" class="part">
+        <span class="part-num">01</span>
+        <div>
+          <h2>Homework</h2>
+          <p><strong>Practical.</strong> Write a small JavaScript / HTML / CSS program showing how a private key generates a public key through elliptic-curve scalar multiplication (in Ethereum the curve is secp256k1). Use the toy curve <code>y² = x³ + 7 (mod 17)</code>, base point <code>G = (1, 5)</code> and private key <code>k = 6</code>; implement point addition, print <code>G, 2G, …, kG</code> (or use a faster method) and print the result as the toy public key. Optional: a slowed-down visual representation of the algorithm.</p>
+          <p><strong>Statistical exploration.</strong> Repeat with different <code>k</code> and base points; study the distribution of coordinates, value frequencies, bit distribution, uniformity, input/output correlation and avalanche-like behaviour; discuss which properties matter for a one-way function and which belong to hash functions.</p>
+          <p><strong>Research.</strong> Modern applications of cryptography and statistics in the most famous blockchains.</p>
+        </div>
+      </section>
+
+      <!-- 02 THEORY -->
+      <section id="theory" class="part">
+        <span class="part-num">02</span>
+        <div>
+          <h2>Theory</h2>
+          <p>An elliptic curve over a prime field 𝔽ₚ is the set of pairs <code>(x, y)</code> with <code>y² ≡ x³ + ax + b (mod p)</code>, plus a special <em>point at infinity</em> <code>O</code>. Ethereum and Bitcoin use secp256k1, where <code>a = 0</code>, <code>b = 7</code> and <code>p = 2²⁵⁶ − 2³² − 977</code>. Our toy curve has the same equation, only with <code>p = 17</code>.</p>
+          <p>Points can be <strong>added</strong>. Geometrically, the line through P and Q meets the curve in a third point, and the sum is that point reflected over the x-axis. Algebraically, with every operation done mod p:</p>
+          <div class="formula">P ≠ Q:  λ = (y₂ − y₁) · (x₂ − x₁)⁻¹
+P = Q:  λ = (3x₁² + a) · (2y₁)⁻¹          (point doubling)
+
+x₃ = λ² − x₁ − x₂
+y₃ = λ(x₁ − x₃) − y₁</div>
+          <p>If <code>Q = −P</code> (same x, opposite y), the result is <code>O</code>, which acts as zero: <code>P + O = P</code>. The "division" is a multiplication by a modular inverse, computed here with the extended Euclidean algorithm.</p>
+          <p><strong>Scalar multiplication</strong> means adding G to itself k times: <code>Q = kG = G + G + … + G</code>. Doing it naively costs k − 1 additions. The <em>double-and-add</em> method reads k in binary and, for each bit, doubles the running point and adds G when the bit is 1. That takes about log₂k steps, so 256-bit keys are practical.</p>
+          <p>The repeated multiples of G cycle through a subgroup whose size is the <strong>order n</strong> of G (<code>nG = O</code>), so the private key only matters modulo n. Going forward (k → kG) is fast. Going backward (kG → k) is the <strong>Elliptic Curve Discrete Logarithm Problem</strong> (ECDLP), and for a 256-bit group no known algorithm solves it in practical time. This asymmetry is what makes <code>k ↦ kG</code> a one-way function. In Ethereum, <code>k</code> is the private key and <code>Q = kG</code> is the public key, from which the address is derived (Homework 2).</p>
+        </div>
+      </section>
+
+      <!-- 03 CURVE -->
+      <section id="curve" class="part">
+        <span class="part-num">03</span>
+        <div>
+          <h2>The toy curve</h2>
+          <p>Every point of the curve, found by trying all x and checking whether <code>x³ + 7</code> is a square mod p. The highlighted points are the multiples of the selected base point, i.e. the subgroup ⟨G⟩.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Prime p
+                <select id="prime">
+                  <option value="17" selected>17 (homework)</option>
+                  <option value="97">97</option>
+                  <option value="389">389</option>
+                  <option value="1009">1009</option>
+                </select>
+              </label>
+              <label>Base point G
+                <select id="base"></select>
+              </label>
+            </div>
+            <div class="facts" id="curve-facts"></div>
+            <div class="point-chips" id="point-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 COMPUTE -->
+      <section id="compute" class="part">
+        <span class="part-num">04</span>
+        <div>
+          <h2>Private key → public key</h2>
+          <p>Choose the private key and the method, then compute <code>Q = kG</code>. The table lists every intermediate point and the slope λ used at each step.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Private key k
+                <input id="k" type="number" value="6" min="1" step="1">
+              </label>
+              <label>Method
+                <select id="method">
+                  <option value="repeated">Repeated addition (G, 2G, … kG)</option>
+                  <option value="double-add">Double-and-add (fast)</option>
+                </select>
+              </label>
+              <button class="btn" id="compute-btn" type="button">Compute Q = kG</button>
+            </div>
+            <div class="pubkey" id="pubkey"></div>
+            <div class="table-wrap"><table class="steps" id="steps-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 VISUAL -->
+      <section id="visual" class="part">
+        <span class="part-num">05</span>
+        <div>
+          <h2>Visualisation</h2>
+          <p>A slowed-down run of the algorithm on the grid 𝔽ₚ × 𝔽ₚ. Every dot is a curve point. At each step the arrow shows the jump to the next point, and the box below shows the arithmetic. The points look scattered and do not trace a smooth curve, which is what makes kG hard to "walk back".</p>
+          <div class="panel">
+            <div class="controls">
+              <button class="btn" id="play" type="button">▶ Play</button>
+              <button class="btn ghost" id="step" type="button">Step</button>
+              <button class="btn ghost" id="restart" type="button">Restart</button>
+              <label>Speed
+                <input id="speed" type="range" min="150" max="2000" value="900" step="50">
+              </label>
+            </div>
+            <canvas id="grid" class="chart grid-canvas" aria-label="Animated scalar multiplication on the curve"></canvas>
+            <div class="caption" id="caption">Press Play or Step to start.</div>
+            <div class="bits" id="bits"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 STATS -->
+      <section id="stats" class="part">
+        <span class="part-num">06</span>
+        <div>
+          <h2>Statistical exploration</h2>
+          <p>For the selected curve and base point we compute <code>Q = kG</code> for every key <code>k = 1 … n − 1</code> and analyse the outputs. Switch to <code>p = 1009</code> for larger samples.</p>
+          <div class="panel">
+            <div class="controls">
+              <button class="btn" id="stats-btn" type="button">Run exploration</button>
+            </div>
+            <div class="facts" id="stats-facts"></div>
+            <div class="chart-grid">
+              <figure><canvas id="c-x" class="chart small"></canvas><figcaption>Frequency of x-coordinates</figcaption></figure>
+              <figure><canvas id="c-y" class="chart small"></canvas><figcaption>Frequency of y-coordinates</figcaption></figure>
+              <figure><canvas id="c-bits" class="chart small"></canvas><figcaption>Share of 1-bits per bit position of x (dashed = 0.5)</figcaption></figure>
+              <figure><canvas id="c-kx" class="chart small"></canvas><figcaption>Input k vs output x</figcaption></figure>
+              <figure><canvas id="c-aval" class="chart small"></canvas><figcaption>Avalanche: bits of x changed when one bit of k flips</figcaption></figure>
+              <figure><canvas id="c-bases" class="chart small"></canvas><figcaption>Order of each possible base point</figcaption></figure>
+            </div>
+            <div class="output" id="stats-out"></div>
+          </div>
+          <div class="panel note" id="stats-notes"></div>
+        </div>
+      </section>
+
+      <!-- 07 SECP -->
+      <section id="secp" class="part">
+        <span class="part-num">07</span>
+        <div>
+          <h2>The same experiment on real secp256k1</h2>
+          <p>The toy curve has only a few points, so its statistics are coarse. Here the same code (with BigInt) runs on the real secp256k1 curve used by Ethereum, with random 256-bit private keys.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Private key k (hex or decimal, empty = random)
+                <input id="secp-k" type="text" placeholder="e.g. 6" class="wide">
+              </label>
+              <button class="btn" id="secp-one" type="button">Compute public key</button>
+            </div>
+            <div class="output" id="secp-key"></div>
+          </div>
+          <div class="panel">
+            <div class="controls">
+              <label>Number of random keys
+                <select id="secp-n">
+                  <option>100</option><option selected>300</option><option>1000</option>
+                </select>
+              </label>
+              <button class="btn" id="secp-run" type="button">Run experiment</button>
+              <span class="progress" id="secp-progress"></span>
+            </div>
+            <div class="chart-grid">
+              <figure><canvas id="s-bits" class="chart small"></canvas><figcaption>Share of 1-bits for each of the 256 bits of x</figcaption></figure>
+              <figure><canvas id="s-byte" class="chart small"></canvas><figcaption>Leading byte of x (16 buckets)</figcaption></figure>
+              <figure class="wide-fig"><canvas id="s-aval" class="chart small"></canvas><figcaption>Avalanche: Hamming distance between x(kG) and x(k′G), k′ = k with one random bit flipped</figcaption></figure>
+            </div>
+            <div class="output" id="secp-out"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 DISCUSSION -->
+      <section id="discussion" class="part">
+        <span class="part-num">08</span>
+        <div>
+          <h2>Discussion</h2>
+          <p>Scalar multiplication shares some behaviour with a hash function: it is deterministic, fast forwards and hard to invert. Its <em>algebraic structure</em>, however, is the opposite of what a hash is designed to have.</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Property</th><th>What we observe</th><th>One-way function (k ↦ kG)</th><th>Hash function</th></tr></thead>
+              <tbody>
+                <tr><td>Determinism</td><td>Same k and G always give the same Q.</td><td class="yes">Essential</td><td class="yes">Essential</td></tr>
+                <tr><td>Hard to invert</td><td>On the toy curve k is found by trying all n values; on secp256k1 n ≈ 2²⁵⁶.</td><td class="yes">Essential (ECDLP)</td><td class="yes">Essential (preimage resistance)</td></tr>
+                <tr><td>Uniform coordinates / bits ≈ ½</td><td>On secp256k1 every bit of x is 1 about half the time; on the toy curve only values with a square on the right-hand side appear.</td><td class="maybe">Nice, not required</td><td class="yes">Required (output should look random)</td></tr>
+                <tr><td>No input/output correlation</td><td>Linear correlation k ↔ x is ≈ 0, but the map is a homomorphism: (a + b)G = aG + bG, and x(kG) = x((n − k)G).</td><td class="maybe">Structure is <em>wanted</em> — it enables ECDH and signatures</td><td class="no">Must not exist</td></tr>
+                <tr><td>Avalanche effect</td><td>Flipping one bit of k changes about half of the bits of x on secp256k1.</td><td class="maybe">A by-product, not a design goal</td><td class="yes">Design requirement (strict avalanche criterion)</td></tr>
+                <tr><td>Collisions</td><td>For 1 ≤ k &lt; n every k gives a different point (k and k + n give the same one).</td><td class="yes">Injective on [1, n−1]</td><td class="maybe">Collisions exist (compression) but must be hard to find</td></tr>
+                <tr><td>Fixed-length, compressing output</td><td>Q is a point of the same size as the group, not a digest of arbitrary data.</td><td class="no">No</td><td class="yes">Yes</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The meaningful properties for k ↦ kG are <strong>determinism, efficiency and hardness of inversion</strong>. Its security rests on the size of the group and the hardness of the ECDLP, not on how random its outputs look. Uniform bits, absence of correlation and avalanche behaviour are <strong>hash-function properties</strong>. A hash is supposed to behave like a random oracle with no exploitable structure, while scalar multiplication is valuable precisely because of its structure: Alice's <code>a(bG)</code> equals Bob's <code>b(aG)</code>, which is how two parties agree on a key.</p>
+          <p>The toy curve also shows why real curves are chosen carefully. Its group has 18 points, and the order 18 = 2 · 3² is not prime, so some base points generate tiny subgroups. <code>(3, 0)</code> has order 2, so it only ever produces <code>(3, 0)</code> and <code>O</code>. G = (1, 5) has order 9, so only 9 private keys are distinct. secp256k1 instead has a prime order n (cofactor 1), so every non-identity point generates the whole group.</p>
+        </div>
+      </section>
+
+      <!-- 09 RESEARCH -->
+      <section id="research" class="part">
+        <span class="part-num">09</span>
+        <div>
+          <h2>Research: cryptography and statistics in major blockchains</h2>
+          <h3>Bitcoin</h3>
+          <p>Accounts are secp256k1 key pairs. Spending is authorised by an <strong>ECDSA</strong> signature, and since the 2021 Taproot upgrade also by <strong>Schnorr signatures</strong> (BIP-340), which can be aggregated. Blocks are chained by <strong>double SHA-256</strong>, and transactions in a block are summarised by a <strong>Merkle tree</strong>. Proof-of-work mining is a statistical process: every hash is an independent trial with a tiny success probability, so block discovery is approximately a <strong>Poisson process</strong>. Inter-block times are roughly exponential with a 10-minute mean, and the difficulty is re-estimated every 2016 blocks to keep that mean. Nakamoto's whitepaper uses a Poisson / gambler's-ruin argument to compute the probability that an attacker with a minority of hash power could rewrite z confirmed blocks, which shrinks exponentially in z.</p>
+          <h3>Ethereum</h3>
+          <p>User accounts also use secp256k1 ECDSA. Addresses are the last 20 bytes of the <strong>Keccak-256</strong> hash of the public key, with EIP-55 checksums. Since the 2022 Merge, Ethereum uses proof of stake: validators sign with <strong>BLS signatures</strong> on the BLS12-381 curve so thousands of signatures can be aggregated into one, and block proposers are chosen pseudo-randomly using <strong>RANDAO</strong>, a mix of validator-contributed randomness. Data storage uses Merkle-Patricia tries, and blob data (EIP-4844) uses <strong>KZG polynomial commitments</strong>. Layer-2 rollups use <strong>zero-knowledge proofs</strong> (SNARKs/STARKs) to prove batches of transactions are valid. The EIP-1559 fee market also adjusts the base fee statistically from how full recent blocks were.</p>
+          <h3>Other chains</h3>
+          <p>Solana signs with <strong>Ed25519</strong> and orders events with "Proof of History", a sequential SHA-256 chain used as a verifiable clock. Monero hides senders with <strong>ring signatures</strong> and amounts with <strong>Pedersen commitments</strong>. Statistics directly affect its privacy: decoy outputs are sampled from a distribution fitted to real spending ages, because researchers showed that badly chosen decoys let the real input be guessed.</p>
+          <h3>Statistics as an attack tool</h3>
+          <p>Statistics is also used <em>against</em> blockchains. Chain-analysis firms cluster addresses using heuristics (such as common-input ownership) and timing patterns. Weak randomness in signature nonces has let attackers recover private keys, since reusing an ECDSA nonce reveals the key. Tests like the ones on this page (bit balance, uniformity) are how weak key generators get caught.</p>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <span>© <span data-year></span> Fikiremariyam Babu Yalew</span>
+        <a href="../../index.html#homeworks">← Back to homeworks</a>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/charts.js"></script>
+  <script src="../../assets/js/ecc.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework 4 · Welford &amp; Sampling Statistics | Statistics Notebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <a href="../../index.html" class="brand">
+        <span class="brand-mark">σ²</span>
+        <span class="brand-text">Statistics<br><small>Notebook</small></span>
+      </a>
+      <nav class="side-nav" aria-label="Homework sections">
+        <a href="#assignment">Assignment</a>
+        <a href="#derivation">Ex. 1 · Derivation</a>
+        <a href="#code">Ex. 1 · Code</a>
+        <a href="#distribution">Ex. 2 · Distribution</a>
+        <a href="#simulation">Ex. 2 · Simulation</a>
+        <a href="#vary-n">Ex. 2 · Varying n</a>
+        <a href="#conclusions">Conclusions</a>
+      </nav>
+      <div class="side-meta">
+        <span class="meta-label">Homework</span>
+        <strong>4 · Inference</strong>
+        <span class="meta-label">Student</span>
+        <strong>Fikiremariyam Babu Yalew</strong>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+        <span class="icon-sun">☀</span><span class="icon-moon">☾</span>
+      </button>
+    </aside>
+
+    <main class="content">
+
+      <header class="hw-header">
+        <a href="../../index.html#assignments" class="back">← All assignments</a>
+        <p class="eyebrow">Homework 4 · Statistical inference</p>
+        <h1>Welford &amp; sampling statistics</h1>
+        <p class="lead">Mean and variance computed one observation at a time, then used to see how sample statistics estimate the true μ and σ² as hackers attack more and more systems.</p>
+      </header>
+
+      <!-- 01 -->
+      <section id="assignment" class="part">
+        <span class="part-num">01</span>
+        <div>
+          <h2>Assignment</h2>
+          <p><strong>Ex. 1 – Welford's recurrence formulas.</strong> Derive Welford's recurrences for the sum of squares (SS) and the variance, following the same approach as Knuth's recurrence for the mean, and write the code (core logic ≈ 3 lines).</p>
+          <p><strong>Ex. 2 – Sampling mean and variance.</strong> Each penetration attempt gets a score in 0 … 10 from a fixed distribution with mean μ and variance σ². m hackers each attack n systems, giving one trajectory of n scores each. Using Welford, compute every hacker's sample mean and variance, average them across hackers, compare with μ and σ², draw conclusions for inferential statistics, and repeat for different n to see how the variability of the estimates changes.</p>
+        </div>
+      </section>
+
+      <!-- 02 DERIVATION -->
+      <section id="derivation" class="part">
+        <span class="part-num">02</span>
+        <div>
+          <h2>Ex. 1 · Deriving the recurrences</h2>
+          <h3>Knuth's recurrence for the mean</h3>
+          <p>Writing the mean of the first n observations in terms of the mean of the first n − 1:</p>
+          <div class="formula">x̄ₙ = (1/n) Σᵢ₌₁ⁿ xᵢ = [(n − 1) x̄ₙ₋₁ + xₙ] / n
+
+x̄ₙ = x̄ₙ₋₁ + (xₙ − x̄ₙ₋₁) / n</div>
+          <p>The new mean is the old mean moved a fraction 1/n of the way toward the new observation. Call that distance <strong>δ = xₙ − x̄ₙ₋₁</strong>, so <code>x̄ₙ = x̄ₙ₋₁ + δ/n</code>.</p>
+
+          <h3>Sum of squares</h3>
+          <p>We want the same kind of update for <code>SSₙ = Σᵢ₌₁ⁿ (xᵢ − x̄ₙ)²</code>. Using the identity <code>SSₙ = Σ xᵢ² − n x̄ₙ²</code>, the difference between consecutive steps is</p>
+          <div class="formula">SSₙ − SSₙ₋₁ = xₙ² − n x̄ₙ² + (n − 1) x̄ₙ₋₁²</div>
+          <p>Write everything in terms of <code>a = x̄ₙ₋₁</code> and δ, with <code>xₙ = a + δ</code> and <code>x̄ₙ = a + δ/n</code>:</p>
+          <div class="formula">xₙ²            = a² + 2aδ + δ²
+n x̄ₙ²          = n a² + 2aδ + δ²/n
+(n − 1) x̄ₙ₋₁²  = (n − 1) a²
+
+SSₙ − SSₙ₋₁ = a² + 2aδ + δ² − n a² − 2aδ − δ²/n + (n − 1) a²
+           = δ² (1 − 1/n)
+           = δ · δ(n − 1)/n</div>
+          <p>Since <code>xₙ − x̄ₙ = a + δ − a − δ/n = δ(n − 1)/n</code>, the second factor is exactly the distance of the new point from the <em>new</em> mean. This gives <strong>Welford's recurrence</strong>:</p>
+          <div class="formula big-code">SSₙ = SSₙ₋₁ + (xₙ − x̄ₙ₋₁)(xₙ − x̄ₙ)            SS₁ = 0</div>
+
+          <h3>Variance</h3>
+          <p>The sample (unbiased) variance is <code>s²ₙ = SSₙ / (n − 1)</code>, and the population form is <code>SSₙ / n</code>. Dividing the SS recurrence by n − 1 gives a direct update for the variance:</p>
+          <div class="formula">s²ₙ = SSₙ₋₁/(n − 1) + δ²/n
+s²ₙ = ((n − 2)/(n − 1)) · s²ₙ₋₁ + (xₙ − x̄ₙ₋₁)² / n        (n ≥ 2)</div>
+          <p>Unlike the textbook formula <code>Σx² − n x̄²</code>, these updates never subtract two large, nearly equal numbers, so they stay <strong>numerically stable</strong>. They also need only O(1) memory: no past observations are stored, which suits streaming data such as live security logs.</p>
+        </div>
+      </section>
+
+      <!-- 03 CODE -->
+      <section id="code" class="part">
+        <span class="part-num">03</span>
+        <div>
+          <h2>Ex. 1 · Code</h2>
+          <p>The core logic is three lines, one per recurrence:</p>
+<pre><code>class Welford {
+  constructor() { this.n = 0; this.mean = 0; this.ss = 0; }
+
+  add(x) {
+    this.n++;
+    const delta = x - this.mean;        // xₙ − x̄ₙ₋₁
+    this.mean  += delta / this.n;       // Knuth:   x̄ₙ = x̄ₙ₋₁ + δ/n
+    this.ss    += delta * (x - this.mean); // Welford: SSₙ = SSₙ₋₁ + δ(xₙ − x̄ₙ)
+  }
+
+  get variance()           { return this.n > 1 ? this.ss / (this.n - 1) : 0; } // s²
+  get populationVariance() { return this.n > 0 ? this.ss / this.n : 0; }
+}</code></pre>
+          <div class="panel">
+            <h3>Check it: Welford vs. the textbook formula</h3>
+            <p class="muted">Enter numbers separated by commas or spaces. Adding a large offset (e.g. 1e9) shows the textbook formula Σx² − n·x̄² losing precision while Welford stays exact.</p>
+            <div class="controls">
+              <label>Data
+                <input id="data" type="text" class="wide" value="4, 7, 13, 16">
+              </label>
+              <label>Offset added to every value
+                <input id="offset" type="text" value="1e9">
+              </label>
+              <button class="btn" id="check" type="button">Compare</button>
+            </div>
+            <div class="table-wrap"><table class="steps" id="check-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 DISTRIBUTION -->
+      <section id="distribution" class="part">
+        <span class="part-num">04</span>
+        <div>
+          <h2>Ex. 2 · The score distribution</h2>
+          <p>Each penetration attempt gets an integer score X ∈ {0, …, 10}. The default is a <strong>Binomial(10, p)</strong> distribution, read as ten independent security checks, each passed with probability p. This models a typical hacker who usually gets part of the way in. Two other distributions are available for comparison. μ and σ² are computed exactly from the probability table:</p>
+          <div class="formula">μ = Σ k·P(X = k)        σ² = Σ (k − μ)²·P(X = k)</div>
+          <div class="panel">
+            <div class="controls">
+              <label>Distribution
+                <select id="dist">
+                  <option value="binom" selected>Binomial(10, p)</option>
+                  <option value="uniform">Uniform {0, …, 10}</option>
+                  <option value="skewed">Skewed (most attempts fail)</option>
+                </select>
+              </label>
+              <label id="p-label">p = <span id="p-val">0.35</span>
+                <input id="p" type="range" min="0.05" max="0.95" step="0.05" value="0.35">
+              </label>
+            </div>
+            <div class="facts" id="dist-facts"></div>
+            <canvas id="c-pmf" class="chart small"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 SIMULATION -->
+      <section id="simulation" class="part">
+        <span class="part-num">05</span>
+        <div>
+          <h2>Ex. 2 · m hackers × n systems</h2>
+          <p>Every hacker produces a trajectory of n scores. A separate Welford accumulator per hacker gives that hacker's sample mean x̄ⱼ and sample variance s²ⱼ, and we then average these across the m hackers.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Hackers m <input id="m" type="number" value="1000" min="2" max="20000"></label>
+              <label>Systems n <input id="n" type="number" value="50" min="2" max="5000"></label>
+              <button class="btn" id="simulate" type="button">Run simulation</button>
+            </div>
+            <div class="facts" id="sim-facts"></div>
+            <div class="chart-grid">
+              <figure class="wide-fig"><canvas id="c-traj" class="chart small"></canvas><figcaption>Running mean x̄ₙ of the first 6 hackers as they attack more systems (black = μ)</figcaption></figure>
+              <figure><canvas id="c-means" class="chart small"></canvas><figcaption>Distribution of the m sample means</figcaption></figure>
+              <figure><canvas id="c-vars" class="chart small"></canvas><figcaption>Distribution of the m sample variances</figcaption></figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 VARY N -->
+      <section id="vary-n" class="part">
+        <span class="part-num">06</span>
+        <div>
+          <h2>Ex. 2 · Increasing the number of systems n</h2>
+          <p>The same experiment for n = 5 … 2000, with m fixed. For each n we record the averages and also the <em>spread across hackers</em>: the standard deviation of the m sample means and of the m sample variances, compared with theory:</p>
+          <div class="formula">SD(x̄) = σ / √n            Var(s²) = (μ₄ − σ⁴ (n − 3)/(n − 1)) / n      μ₄ = E[(X − μ)⁴]</div>
+          <div class="panel">
+            <div class="controls">
+              <label>Hackers m <input id="m2" type="number" value="1000" min="10" max="5000"></label>
+              <button class="btn" id="vary" type="button">Run for all n</button>
+              <span class="progress" id="vary-progress"></span>
+            </div>
+            <div class="chart-grid">
+              <figure><canvas id="c-sdmean" class="chart small"></canvas><figcaption>SD of sample means: simulated (orange) vs σ/√n (teal)</figcaption></figure>
+              <figure><canvas id="c-sdvar" class="chart small"></canvas><figcaption>SD of sample variances: simulated (orange) vs theory (teal)</figcaption></figure>
+            </div>
+            <div class="table-wrap top-gap"><table class="steps" id="vary-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 CONCLUSIONS -->
+      <section id="conclusions" class="part">
+        <span class="part-num">07</span>
+        <div>
+          <h2>Conclusions</h2>
+          <h3>What the comparisons show</h3>
+          <ul>
+            <li><strong>The average of the sample means matches μ</strong> for every n. A single hacker's x̄ can be far from μ, but there is no systematic error: the sample mean is an <em>unbiased estimator</em>, E[x̄] = μ.</li>
+            <li><strong>The average of the sample variances matches σ²</strong> when we divide by n − 1. Dividing by n instead (the "biased" column) underestimates σ² by the factor (n − 1)/n, which is very visible for small n. This is why the sample variance uses n − 1 (Bessel's correction): x̄ is fitted to the same data, which uses up one degree of freedom.</li>
+            <li><strong>Individual estimates fluctuate around the truth.</strong> The histograms show the <em>sampling distributions</em> of x̄ and s². The distribution of x̄ is bell-shaped even though the scores are discrete and bounded, as the Central Limit Theorem predicts.</li>
+          </ul>
+          <h3>Why this matters for inference</h3>
+          <p>In practice we observe <em>one</em> sample and never see μ or σ². These results justify using x̄ and s² as estimates of them. Knowing that SD(x̄) = σ/√n, estimated by s/√n (the <strong>standard error</strong>), gives confidence intervals such as x̄ ± 1.96·s/√n and allows hypothesis tests, for example whether one hacker is significantly better than average or whether a system's mean score has changed. Welford's method lets these quantities be updated live, one attempt at a time, without storing the data.</p>
+          <h3>Effect of increasing n</h3>
+          <p>As each hacker attacks more systems, both estimators <strong>concentrate around the true values</strong> (Law of Large Numbers). Their spread shrinks like <strong>1/√n</strong>: four times as many systems halve the standard deviation of x̄, and the same holds asymptotically for s². The averages across hackers stay at μ and σ² for every n, because n affects the <em>precision</em> of an estimate, not its <em>bias</em>. The simulated spreads in the table track the theoretical formulas closely.</p>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <span>© <span data-year></span> Fikiremariyam Babu Yalew</span>
+        <a href="../../index.html#assignments">← Back to assignments</a>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/charts.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

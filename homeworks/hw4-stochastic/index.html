@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework 4 · Stochastic Penetration Processes | Statistics Notebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <a href="../../index.html" class="brand">
+        <span class="brand-mark">σ²</span>
+        <span class="brand-text">Statistics<br><small>Notebook</small></span>
+      </a>
+      <nav class="side-nav" aria-label="Homework sections">
+        <a href="#homework">Homework</a>
+        <a href="#model">Model</a>
+        <a href="#trajectories">Trajectories</a>
+        <a href="#distributions">Distributions</a>
+        <a href="#lln">LLN</a>
+        <a href="#variance">Variance</a>
+        <a href="#clt">CLT</a>
+        <a href="#attackers">n &amp; m</a>
+        <a href="#conclusions">Conclusions</a>
+      </nav>
+      <div class="side-meta">
+        <span class="meta-label">Homework</span>
+        <strong>4 · Stochastic processes</strong>
+        <span class="meta-label">Student</span>
+        <strong>Fikiremariyam Babu Yalew</strong>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode"></button>
+    </aside>
+
+    <main class="content">
+
+      <header class="hw-header">
+        <a href="../../index.html#homeworks" class="back">← All homeworks</a>
+        <p class="eyebrow">Homework 4 · Stochastic processes</p>
+        <h1>Stochastic penetration processes</h1>
+        <p class="lead">m attackers, n systems, and a score added at each step. Simulating Sₙ, Sₙ/n and Sₙ/√n shows the Law of Large Numbers and the Central Limit Theorem at work.</p>
+      </header>
+
+      <!-- 01 -->
+      <section id="homework" class="part">
+        <span class="part-num">01</span>
+        <div>
+          <h2>Homework</h2>
+          <p>Consider n systems and m attackers. Model the penetration process as a stochastic process with i.i.d. increments X₁, X₂, …, the penetration score at each step, under two models:</p>
+          <ul>
+            <li><strong>Bernoulli:</strong> Xᵢ ∈ {0, 1} with P(Xᵢ = 1) = p.</li>
+            <li><strong>Rademacher:</strong> Xᵢ ∈ {−1, +1} with P(Xᵢ = +1) = P(Xᵢ = −1) = ½, the symmetric, zero-mean case.</li>
+          </ul>
+          <p>For increasing n and suitable m, simulate sample trajectories and study the distributions of the <strong>total score</strong> Sₙ = Σ Xᵢ, the <strong>average score</strong> Sₙ/n and the <strong>normalized total</strong> Sₙ/√n. Investigate the convergence in probability of Sₙ/n (LLN), the variance under each normalization, and the convergence in distribution of Sₙ/√n to N(0, 1) in the Rademacher case (CLT). Interpret the trajectories in terms of n systems and m attackers, and discuss how system size and number of attackers affect the aggregate penetration score.</p>
+        </div>
+      </section>
+
+      <!-- 02 MODEL -->
+      <section id="model" class="part">
+        <span class="part-num">02</span>
+        <div>
+          <h2>The model and what theory predicts</h2>
+          <p>Each attacker j = 1 … m attacks the systems one after another. Step i is the attempt on system i, and its outcome is the increment Xᵢ⁽ʲ⁾. The partial sums S₁, S₂, …, Sₙ form the attacker's <strong>trajectory</strong>, a random walk. In the Bernoulli model Sₙ counts successful penetrations. In the Rademacher model it is a net score: +1 for a breach, −1 for being detected or blocked.</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th></th><th>Bernoulli(p)</th><th>Rademacher</th></tr></thead>
+              <tbody>
+                <tr><td>Mean μ = E[Xᵢ]</td><td>p</td><td>0</td></tr>
+                <tr><td>Variance σ² = Var(Xᵢ)</td><td>p(1 − p)</td><td>1</td></tr>
+                <tr><td>Total Sₙ</td><td>mean np, variance np(1−p) (Binomial)</td><td>mean 0, variance n</td></tr>
+                <tr><td>Average Sₙ/n</td><td>mean p, variance p(1−p)/n → 0</td><td>mean 0, variance 1/n → 0</td></tr>
+                <tr><td>Normalized Sₙ/√n</td><td>mean p√n → ∞, variance p(1−p)</td><td>mean 0, variance 1 → N(0, 1)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>These all follow from the fact that the variance of a sum of independent terms is the sum of their variances: <code>Var(Sₙ) = nσ²</code>, so <code>Var(Sₙ/n) = σ²/n</code> and <code>Var(Sₙ/√n) = σ²</code>. Dividing by n is <em>too strong</em>, since the fluctuations vanish and only the mean survives (LLN). Not dividing is <em>too weak</em>, since the fluctuations grow like √n. Dividing by √n is <em>exactly right</em>: the fluctuations stay of order one and their shape converges to a normal distribution (CLT).</p>
+          <div class="formula">LLN (weak):  P( |Sₙ/n − μ| > ε ) → 0   for every ε > 0       (Chebyshev: ≤ σ² / (n ε²))
+CLT:         (Sₙ − nμ) / (σ√n)  →  N(0, 1) in distribution   (Rademacher: Sₙ/√n → N(0, 1))</div>
+        </div>
+      </section>
+
+      <!-- 03 TRAJECTORIES -->
+      <section id="trajectories" class="part">
+        <span class="part-num">03</span>
+        <div>
+          <h2>Sample trajectories</h2>
+          <div class="panel">
+            <div class="controls">
+              <label>Model
+                <select id="model-sel">
+                  <option value="rademacher" selected>Rademacher (±1)</option>
+                  <option value="bernoulli">Bernoulli (0/1)</option>
+                </select>
+              </label>
+              <label id="p-wrap">p = <span id="p-val">0.30</span>
+                <input id="p" type="range" min="0.05" max="0.95" step="0.05" value="0.3">
+              </label>
+              <label>Systems n <input id="n" type="number" value="1000" min="10" max="20000"></label>
+              <label>Attackers m <input id="m" type="number" value="2000" min="10" max="20000"></label>
+              <button class="btn" id="run" type="button">Simulate</button>
+            </div>
+            <div class="facts" id="model-facts"></div>
+            <div class="chart-grid">
+              <figure class="wide-fig"><canvas id="t-total" class="chart small"></canvas><figcaption>Total score Sₖ for 12 attackers (black = mean nμ ± 2σ√k)</figcaption></figure>
+              <figure><canvas id="t-avg" class="chart small"></canvas><figcaption>Average score Sₖ/k: the paths converge to μ</figcaption></figure>
+              <figure><canvas id="t-norm" class="chart small"></canvas><figcaption>Normalized score Sₖ/√k: the spread stays the same</figcaption></figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 DISTRIBUTIONS -->
+      <section id="distributions" class="part">
+        <span class="part-num">04</span>
+        <div>
+          <h2>Distributions across the m attackers (at k = n)</h2>
+          <div class="panel">
+            <div class="chart-grid">
+              <figure><canvas id="d-total" class="chart small"></canvas><figcaption>Sₙ</figcaption></figure>
+              <figure><canvas id="d-avg" class="chart small"></canvas><figcaption>Sₙ/n</figcaption></figure>
+              <figure class="wide-fig"><canvas id="d-norm" class="chart small"></canvas><figcaption>Sₙ/√n with the normal density of the same mean and variance (pink)</figcaption></figure>
+            </div>
+            <div class="table-wrap top-gap"><table class="steps" id="dist-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 LLN -->
+      <section id="lln" class="part">
+        <span class="part-num">05</span>
+        <div>
+          <h2>Law of Large Numbers: convergence in probability of Sₙ/n</h2>
+          <p>For each n we estimate P(|Sₙ/n − μ| > ε) as the fraction of the m attackers whose average lies more than ε from μ, and compare it with the Chebyshev bound σ²/(nε²). For very small n the curve can briefly rise, because Sₙ/n only takes a few discrete values. In the Rademacher case with n = 10, for instance, |Sₙ/n| ≤ 0.05 requires exactly Sₙ = 0. Once n is large, the probability drops to zero, as the LLN predicts.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>ε
+                <select id="eps"><option>0.02</option><option selected>0.05</option><option>0.1</option></select>
+              </label>
+              <button class="btn" id="run-lln" type="button">Run LLN experiment</button>
+              <span class="progress" id="lln-progress"></span>
+            </div>
+            <canvas id="c-lln" class="chart"></canvas>
+            <div class="legend"><span><span class="sw s1"></span>simulated P(|Sₙ/n − μ| &gt; ε)</span><span><span class="sw s2"></span>Chebyshev bound (capped at 1)</span></div>
+            <div class="table-wrap top-gap"><table class="steps" id="lln-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 VARIANCE -->
+      <section id="variance" class="part">
+        <span class="part-num">06</span>
+        <div>
+          <h2>Variance under the three normalizations</h2>
+          <p>Sample variance across the m attackers for each n, against nσ², σ²/n and σ². The three behaviours are visible at once: growing, shrinking and stable.</p>
+          <div class="panel">
+            <div class="chart-grid">
+              <figure><canvas id="v-total" class="chart small"></canvas><figcaption>Var(Sₙ) vs nσ²: grows linearly</figcaption></figure>
+              <figure><canvas id="v-avg" class="chart small"></canvas><figcaption>Var(Sₙ/n) vs σ²/n: shrinks to 0</figcaption></figure>
+              <figure class="wide-fig"><canvas id="v-norm" class="chart small"></canvas><figcaption>Var(Sₙ/√n) vs σ²: constant (orange = simulated, pink = theory)</figcaption></figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 CLT -->
+      <section id="clt" class="part">
+        <span class="part-num">07</span>
+        <div>
+          <h2>Central Limit Theorem: Sₙ/√n → N(0, 1) (Rademacher)</h2>
+          <p>Histograms of Sₙ/√n over the m attackers for growing n, with the standard normal density. For small n the distribution is visibly discrete, taking only the n + 1 values (2k − n)/√n. As n grows the lattice becomes finer and the shape matches the bell curve. The Kolmogorov–Smirnov distance supₓ |Fₙ(x) − Φ(x)| measures the gap and shrinks roughly like 1/√n.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Attackers m <input id="m-clt" type="number" value="5000" min="100" max="50000"></label>
+              <button class="btn" id="run-clt" type="button">Run CLT experiment</button>
+            </div>
+            <div class="clt-grid" id="clt-grid"></div>
+            <canvas id="c-ks" class="chart small top-gap"></canvas>
+            <div class="legend"><span><span class="sw s1"></span>KS distance (simulated)</span><span><span class="sw s2"></span>reference 0.4/√n</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 n & m -->
+      <section id="attackers" class="part">
+        <span class="part-num">08</span>
+        <div>
+          <h2>Interpreting n systems and m attackers</h2>
+          <p>The number of systems n is the <strong>length</strong> of each trajectory. The number of attackers m is the <strong>number of independent trajectories</strong>, i.e. how many samples we have of each distribution. They play different roles:</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Systems n <input id="n-m" type="number" value="500" min="10" max="5000"></label>
+              <button class="btn" id="run-m" type="button">Vary m</button>
+            </div>
+            <div class="table-wrap"><table class="steps" id="m-table"></table></div>
+          </div>
+          <ul>
+            <li><strong>More systems (larger n).</strong> Each attacker's <em>total</em> score drifts by nμ and spreads by σ√n, so differences between attackers in absolute terms grow. Their <em>success rate</em> Sₙ/n becomes a precise estimate of μ = p. In the Rademacher case the net score has no drift: typical attackers end at about ±√n, and the walk keeps crossing zero.</li>
+            <li><strong>More attackers (larger m).</strong> m does not change any single trajectory, but it gives a sharper picture of the distribution: the sample mean of the m scores has standard error σ√n/√m. It also makes <strong>extremes</strong> more likely. The score of the best of m attackers grows like √(2 ln m) even when nobody has any skill (Rademacher, μ = 0). A large organisation facing many attackers will therefore see some very "successful" ones by chance alone.</li>
+            <li><strong>Aggregate score</strong> over all attackers, Σⱼ Sₙ⁽ʲ⁾, is a sum of m·n independent increments. Its mean is m·n·μ and its standard deviation σ√(mn), so the total exposure grows linearly in both n and m while its relative uncertainty shrinks like 1/√(mn).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 09 CONCLUSIONS -->
+      <section id="conclusions" class="part">
+        <span class="part-num">09</span>
+        <div>
+          <h2>Conclusions</h2>
+          <ul>
+            <li><strong>Sₙ</strong> has variance nσ², so its distribution spreads out without bound. In the Bernoulli model it also drifts upward at rate p. Raw totals are hard to compare across different system sizes.</li>
+            <li><strong>Sₙ/n</strong> converges in probability to μ (LLN). Its variance σ²/n goes to zero, and the simulated probability of a deviation larger than ε falls to zero, staying below the Chebyshev bound. With many systems, an attacker's observed success rate reveals their true success probability.</li>
+            <li><strong>Sₙ/√n</strong> keeps variance σ² for every n. In the Rademacher case its distribution converges to N(0, 1) (CLT), and the KS distance shrinks as n grows. In the Bernoulli case Sₙ/√n drifts to infinity because μ ≠ 0, so the centred version (Sₙ − np)/√(np(1−p)) is the one that converges to N(0, 1).</li>
+            <li>The √n scaling is what statistical inference relies on: it gives the size of random fluctuations, so we can tell a genuinely skilled attacker (a drift of order n) from a lucky one (a fluctuation of order √n), with the caveat that among many attackers the luckiest one drifts upward, roughly like √(2 ln m) standard units, by chance alone.</li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <span>© <span data-year></span> Fikiremariyam Babu Yalew</span>
+        <a href="../../index.html#homeworks">← Back to homeworks</a>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/charts.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

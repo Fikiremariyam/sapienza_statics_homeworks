@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics Notebook | Fikiremariyam Babu Yalew</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/theme.css">
+</head>
+<body>
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">σ²</span>
+        <span class="brand-text">Statistics<br><small>Notebook</small></span>
+      </a>
+
+      <nav class="side-nav" aria-label="Main navigation">
+        <a href="#overview" class="active">Overview</a>
+        <a href="#homeworks">Homeworks</a>
+        <a href="#about">About</a>
+      </nav>
+
+      <div class="side-meta">
+        <span class="meta-label">Student</span>
+        <strong>Fikiremariyam Babu Yalew</strong>
+        <span class="meta-label">Matricola</span>
+        <strong>0000000</strong>
+      </div>
+
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+        <span class="icon-sun">☀</span><span class="icon-moon">☾</span>
+      </button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="content">
+
+      <section id="overview" class="intro">
+        <p class="eyebrow">Sapienza University of Rome · MSc Cybersecurity</p>
+        <h1>A notebook of <em>statistics</em> &amp; security.</h1>
+        <p class="lead">
+          Homeworks for the Statistics course, each written up with its theory,
+          an interactive implementation in plain HTML, CSS and JavaScript, and the results.
+        </p>
+        <div class="stats-row">
+          <div><span class="num">5</span><span class="lbl">Homeworks</span></div>
+          <div><span class="num">2026</span><span class="lbl">Academic year</span></div>
+          <div><span class="num">JS</span><span class="lbl">No frameworks</span></div>
+        </div>
+      </section>
+
+      <section id="homeworks" class="block">
+        <header class="block-head">
+          <span class="eyebrow">Index</span>
+          <h2>Homeworks</h2>
+        </header>
+
+        <ol class="hw-list">
+          <li>
+            <a href="homeworks/hw1-ecc/index.html">
+              <span class="hw-num">1</span>
+              <span class="hw-body">
+                <span class="hw-title">Public-Key Cryptography</span>
+                <span class="hw-desc">Elliptic-curve scalar multiplication on a small toy curve, with a statistical look at the results.</span>
+              </span>
+              <span class="hw-tag">Cryptography</span>
+            </a>
+          </li>
+          <li>
+            <a href="homeworks/hw2-wallet/index.html">
+              <span class="hw-num">2</span>
+              <span class="hw-body">
+                <span class="hw-title">From Wallet Seed to Ethereum Address</span>
+                <span class="hw-desc">BIP-39, BIP-32/44, secp256k1, Keccak-256 and EIP-55: the full pipeline, with the statistics of each step.</span>
+              </span>
+              <span class="hw-tag">Ethereum</span>
+            </a>
+          </li>
+          <li>
+            <a href="homeworks/hw3-cryptanalysis/index.html">
+              <span class="hw-num">3</span>
+              <span class="hw-body">
+                <span class="hw-title">Encryption &amp; Cryptanalysis</span>
+                <span class="hw-desc">Toy EC-ElGamal on secp256k1, the Caesar cipher, statistical key recovery and an attack on a small private key.</span>
+              </span>
+              <span class="hw-tag">Cryptanalysis</span>
+            </a>
+          </li>
+          <li>
+            <a href="homeworks/hw4-stochastic/index.html">
+              <span class="hw-num">4</span>
+              <span class="hw-body">
+                <span class="hw-title">Stochastic Penetration Processes</span>
+                <span class="hw-desc">Bernoulli and Rademacher penetration models: Sₙ, Sₙ/n and Sₙ/√n, the Law of Large Numbers and the Central Limit Theorem.</span>
+              </span>
+              <span class="hw-tag">Stochastic</span>
+            </a>
+          </li>
+          <li>
+            <a href="homeworks/hw5-welford/index.html">
+              <span class="hw-num">5</span>
+              <span class="hw-body">
+                <span class="hw-title">Welford &amp; Sampling Statistics</span>
+                <span class="hw-desc">Online mean and variance with Welford's algorithm, and sampling experiments across hackers and systems.</span>
+              </span>
+              <span class="hw-tag">Inference</span>
+            </a>
+          </li>
+        </ol>
+      </section>
+
+      <section id="about" class="block about">
+        <header class="block-head">
+          <span class="eyebrow">Colophon</span>
+          <h2>About</h2>
+        </header>
+        <p>
+          This site collects my coursework for Statistics in the Master's Degree in
+          Cybersecurity at Sapienza University of Rome. Every page is static and runs
+          entirely in the browser, so it can be hosted on GitHub Pages.
+        </p>
+      </section>
+
+      <footer class="foot">
+        <span>© <span data-year></span> Fikiremariyam Babu Yalew</span>
+        <span>Statistics · Sapienza University of Rome</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
