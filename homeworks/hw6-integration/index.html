@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Homework 6 · Riemann and Lebesgue Integration | Statistics Notebook</title>
+  <title>Homework 6 · Integration and the Normal CDF | Statistics Notebook</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/theme.css">
@@ -18,37 +18,45 @@
         <span class="brand-text">Statistics<br><small>Notebook</small></span>
       </a>
       <nav class="side-nav" aria-label="Homework sections">
-        <a href="#homework">Homework</a>
-        <a href="#theory">Theory</a>
+        <a href="#es1">Es 1</a>
         <a href="#explorer">Explorer</a>
-        <a href="#algorithms">Algorithms</a>
         <a href="#results">Results</a>
         <a href="#convergence">Convergence</a>
-        <a href="#efficiency">Efficiency</a>
         <a href="#pathological">Pathological</a>
-        <a href="#conclusions">Conclusions</a>
+        <a href="#es2">Es 2</a>
+        <a href="#liouville">Liouville</a>
+        <a href="#cdf-methods">Methods</a>
+        <a href="#cdf-accuracy">Accuracy</a>
+        <a href="#sources">Sources</a>
       </nav>
       <div class="side-meta">
         <span class="meta-label">Homework</span>
-        <strong>6 · Integration</strong>
+        <strong>5 · Integration</strong>
         <span class="meta-label">Student</span>
         <strong>Fikiremariyam Babu Yalew</strong>
       </div>
       <button class="theme-toggle" type="button" aria-label="Toggle dark mode"></button>
     </aside>
 
-    <main class="content">
+    <main class="content hw6-wide">
 
       <header class="hw-header">
         <a href="../../index.html#homeworks" class="back">← All homeworks</a>
-        <p class="eyebrow">Homework 6 · Es 1 · Integration</p>
-        <h1>Riemann and Lebesgue integration</h1>
-        <p class="lead">Two ways to measure the area under a curve: slice the domain (Riemann) or slice the range and measure preimages (Lebesgue). Both are implemented here, run on nine functions, and compared on accuracy, convergence and cost.</p>
+        <p class="eyebrow">Homework 5 · Integration</p>
+        <h1>Riemann, Lebesgue and the normal CDF</h1>
+        <p class="lead">Es 1 compares two ways to measure the area under a curve: slicing the domain (Riemann) and slicing the range and measuring preimages (Lebesgue). Es 2 computes one particular area that has no elementary formula, the standard normal CDF, and builds a fast method accurate to 13–14 significant digits, even far out in the tails.</p>
       </header>
+
+      <div class="es-columns">
+      <div class="es-col">
+
+      <div class="es-divider" id="es1">
+        <span class="es-tag">Es 1</span>
+        <h2>Riemann and Lebesgue integration</h2>
+      </div>
 
       <!-- 01 HOMEWORK -->
       <section id="homework" class="part">
-        <span class="part-num">01</span>
         <div>
           <h2>Homework</h2>
           <p>Choose a collection of interesting functions f₁, f₂, … and compute their integrals numerically, using approaches inspired by the <strong>Riemann</strong> definition (partitioning the domain into subintervals) and the <strong>Lebesgue</strong> definition (partitioning the range of function values into measurable subsets and considering their preimages in the domain). Compare the two approaches in terms of accuracy, convergence and computational efficiency. For Riemann-integrable functions, discuss whether the two approaches converge to the same value, and include examples where they behave differently.</p>
@@ -73,7 +81,6 @@
 
       <!-- 02 THEORY -->
       <section id="theory" class="part">
-        <span class="part-num">02</span>
         <div>
           <h2>Two definitions of the integral</h2>
 
@@ -100,7 +107,6 @@ Uₙ = Σᵢ supᵢ f · Δx,   Lₙ = Σᵢ infᵢ f · Δx,   integrable ⇔ U
 
       <!-- 03 EXPLORER -->
       <section id="explorer" class="part">
-        <span class="part-num">03</span>
         <div>
           <h2>Interactive explorer</h2>
           <p>Columns are Riemann rectangles (midpoint tags). Horizontal slabs are Lebesgue levels: each slab covers exactly the preimage { x : f(x) &gt; t } at its middle height t, which can be several disjoint pieces.</p>
@@ -125,7 +131,6 @@ Uₙ = Σᵢ supᵢ f · Δx,   Lₙ = Σᵢ infᵢ f · Δx,   integrable ⇔ U
 
       <!-- 04 ALGORITHMS -->
       <section id="algorithms" class="part">
-        <span class="part-num">04</span>
         <div>
           <h2>The algorithms</h2>
           <p>Five schemes are compared. All take a number of pieces n: subintervals for Riemann, levels for Lebesgue.</p>
@@ -179,7 +184,6 @@ function sampler(F, N) {
 
       <!-- 05 RESULTS -->
       <section id="results" class="part">
-        <span class="part-num">05</span>
         <div>
           <h2>Results at n = 1000</h2>
           <p>Value of each scheme with n = 1000 subintervals or levels, and its absolute error underneath. The exact values come from antiderivatives, except sin x / x, whose exact value is the sine integral Si(π) ≈ 1.8519370520.</p>
@@ -192,7 +196,6 @@ function sampler(F, N) {
 
       <!-- 06 CONVERGENCE -->
       <section id="convergence" class="part">
-        <span class="part-num">06</span>
         <div>
           <h2>Convergence</h2>
           <p>Error against n on log–log axes. A straight line with slope −p means error ∝ n⁻ᵖ: doubling n divides the error by 2ᵖ. Odd values of n are used so that a jump at x = ½ never lands on a grid point by luck. Hollow circles at the bottom mark an error of exactly zero.</p>
@@ -210,7 +213,6 @@ function sampler(F, N) {
 
       <!-- 07 EFFICIENCY -->
       <section id="efficiency" class="part">
-        <span class="part-num">07</span>
         <div>
           <h2>Computational efficiency</h2>
           <p>For each scheme: the smallest n (doubling from 5 up to about 10⁶) that reaches an error below 10⁻⁶, and the time that run took in this browser. The cost column says what each piece needs. "—" means the target was not reached within the limit.</p>
@@ -226,7 +228,6 @@ function sampler(F, N) {
 
       <!-- 08 PATHOLOGICAL -->
       <section id="pathological" class="part">
-        <span class="part-num">08</span>
         <div>
           <h2>Pathological functions: where the two definitions part ways</h2>
 
@@ -269,9 +270,8 @@ function sampler(F, N) {
 
       <!-- 09 CONCLUSIONS -->
       <section id="conclusions" class="part">
-        <span class="part-num">09</span>
         <div>
-          <h2>Conclusions</h2>
+          <h2>Conclusions (Es 1)</h2>
           <ul>
             <li><strong>Same limit for every Riemann-integrable function.</strong> On sin x, x², the step functions, |x − ½|, sin x / x and Thomae, all schemes converge to the exact value, as the agreement theorem predicts. The differences are only in how fast.</li>
             <li><strong>Riemann accuracy depends on the smoothness of f in x.</strong> Midpoint sums converge like n⁻² for smooth f (sin x, x², sin x / x), left sums like n⁻¹. The exception is when f(a) = f(b), as for sin x and |x − ½|: then the left sum equals the trapezoidal rule and also reaches order 2. A jump spoils every Riemann scheme back to n⁻¹, an error of about jump × Δx / 2 whenever the jump falls inside a piece. A corner like |x − ½| costs nothing, since the function stays continuous.</li>
@@ -279,6 +279,242 @@ function sampler(F, N) {
             <li><strong>Unbounded functions behave differently.</strong> For 1/√x the left Riemann sum is undefined (f(0) = ∞), and the proper Riemann integral does not exist, only the improper limit. Lebesgue handles it directly by truncating at height H and using monotone convergence: the measure m({f &gt; t}) = 1/t² is exact, and the only error is the cut-off tail ∫_H^∞ t⁻² dt = 1/H. With H = √n both approaches converge like n^(−½).</li>
             <li><strong>Efficiency depends on the function, but in general favours Riemann.</strong> On smooth functions, midpoint Riemann reaches an error of 10⁻⁶ with 4–8 times fewer pieces than midpoint Lebesgue, and for sin x / x each Lebesgue level costs a 60-step bisection. On step functions the roles reverse: Lebesgue is exact with a handful of levels, while Riemann needs about a million subintervals. But Lebesgue's speed relies on knowing the preimages. A general method has to sample f on a grid and sort the values, which costs more than the Riemann sum it is built on, and its error stops at the grid's own error (visible for |x − ½|).</li>
             <li><strong>Pathological functions show where Lebesgue wins in theory.</strong> Dirichlet has no Riemann integral (U = 1, L = 0 forever) but a clean Lebesgue integral of 0. Thomae is integrable in both senses, with value 0. Neither can be computed by sampling, because floating-point numbers are all rational: Dirichlet always reads as 1. These cases are settled by the measure theory, not by the numerics.</li>
+          </ul>
+        </div>
+      </section>
+
+      </div><!-- /es-col Es 1 -->
+
+      <div class="es-col">
+      <!-- ================= ES 2 ================= -->
+      <div class="es-divider" id="es2">
+        <span class="es-tag">Es 2</span>
+        <h2>Numerical computation of the normal CDF</h2>
+      </div>
+
+      <!-- 10 HOMEWORK -->
+      <section id="cdf-homework" class="part">
+        <div>
+          <h2>Homework</h2>
+          <p>Develop an efficient numerical method to compute the cumulative distribution function (CDF) of the standard normal distribution. Implement it, evaluate the CDF at several points and compare the results with a trusted numerical reference found on the web. Investigate the efficiency and accuracy of the implementation. Explain why the normal CDF cannot be expressed in terms of elementary functions (Liouville's theorem), how the error function erf gives an exact analytical representation, and why numerical methods are still needed. Explore numerical integration, series expansions and approximations based on erf.</p>
+        </div>
+      </section>
+
+      <!-- 11 THE CDF -->
+      <section id="cdf-theory" class="part">
+        <div>
+          <h2>The standard normal PDF and CDF</h2>
+          <p>The standard normal distribution N(0, 1) has density φ and cumulative distribution function Φ. Φ(x) is the probability that a standard normal value is at most x, which is the area under the bell curve to the left of x.</p>
+          <div class="formula">φ(x) = e^(−x²/2) / √(2π)            Φ(x) = P(Z ≤ x) = ∫₋∞ˣ φ(t) dt
+
+Φ(0) = ½        Φ(−x) = 1 − Φ(x)        Φ′(x) = φ(x)        Φ(x) → 1 as x → ∞</div>
+          <p>The constant 1/√(2π) makes the total area 1. The standard proof (Hogg, McKean and Craig, §3.4) squares the integral I = ∫ e^(−t²/2) dt and switches to polar coordinates: I² = ∫∫ e^(−(u²+v²)/2) du dv = ∫₀^(2π) ∫₀^∞ e^(−r²/2) r dr dθ = 2π. The extra factor r is exactly what makes the inner integral elementary. That trick only works over the whole line, not up to an arbitrary x, which is why Φ(x) itself has no formula.</p>
+          <p>The symmetry Φ(−x) = 1 − Φ(x) means we only ever need x ≥ 0. Computing the <em>upper tail</em> Q(x) = 1 − Φ(x) separately matters in practice: for x = 9, Φ(x) = 1 − 1.1 × 10⁻¹⁹, which a double rounds to exactly 1, so 1 − Φ(x) gives 0 and all information about the tail is lost.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>x = <input id="calc-x" type="number" min="-10" max="10" step="0.01" value="1.00"></label>
+              <input id="calc-slider" type="range" min="-800" max="800" step="1" value="100" aria-label="x">
+            </div>
+            <canvas id="calc-canvas" class="hw6-chart"></canvas>
+            <div class="facts" id="calc-facts"></div>
+            <div class="table-wrap top-gap"><table class="steps" id="calc-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 LIOUVILLE -->
+      <section id="liouville" class="part">
+        <div>
+          <h2>Why Φ has no elementary formula: Liouville's theorem</h2>
+          <p><strong>Elementary functions</strong> are those built from rational functions with finitely many additions, multiplications, divisions, compositions, exponentials, logarithms and algebraic operations (roots). sin, cos, arctan are included, since they can be written with complex exponentials and logarithms.</p>
+          <p><strong>Liouville's theorem</strong> (1835, modern form by Rosenlicht, 1972) describes exactly what an elementary antiderivative can look like. The case we need is:</p>
+          <div class="formula">Let f, g be rational functions, g not constant. Then
+    ∫ f(x) e^(g(x)) dx   is elementary
+⇔  there is a rational function R(x) with   R′(x) + g′(x) R(x) = f(x),
+    and in that case   ∫ f e^g dx = R(x) e^(g(x)).</div>
+          <h3>Applying it to the bell curve</h3>
+          <p>For e^(−x²/2) we have f = 1 and g = −x²/2, so g′ = −x. An elementary antiderivative exists only if some rational R satisfies</p>
+          <div class="formula">R′(x) − x · R(x) = 1</div>
+          <ul>
+            <li><strong>R cannot be a polynomial.</strong> If R has degree d ≥ 0, then x·R has degree d + 1 while R′ has degree d − 1 and the right side has degree 0. The leading term of x·R has nothing to cancel against, so the two sides cannot be equal. (R = 0 gives 0 = 1.)</li>
+            <li><strong>R cannot have a pole.</strong> Suppose R = P/Q has a pole of order k ≥ 1 at some point c. Then R′ has a pole of order k + 1 at c, while x·R has a pole of order at most k and the constant 1 has none. The (k+1)-order pole of R′ cannot be cancelled, so again the equation fails.</li>
+          </ul>
+          <p>So no rational R exists, and ∫ e^(−x²/2) dx is <strong>not elementary</strong>. If Φ were elementary, then (Φ(x) − ½)·√(2π) = ∫₀ˣ e^(−t²/2) dt would be an elementary antiderivative, a contradiction. This is a proof of impossibility, not a failure to find the formula. Computer algebra systems decide such questions with the Risch algorithm, which is built on the same theorem.</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Integrand</th><th>f, g</th><th>Equation for R</th><th>Rational solution?</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>x e^(−x²/2)</td><td>f = x, g = −x²/2</td><td>R′ − xR = x</td><td>R = −1 ✓</td><td>−e^(−x²/2), elementary</td></tr>
+                <tr><td>e^(−x²/2)</td><td>f = 1, g = −x²/2</td><td>R′ − xR = 1</td><td>none ✗</td><td>needs erf</td></tr>
+                <tr><td>x² e^(−x²/2)</td><td>f = x², g = −x²/2</td><td>R′ − xR = x²</td><td>none ✗ (R = ax + b forces a = −1 and a = 0)</td><td>−x e^(−x²/2) + ∫ e^(−x²/2)</td></tr>
+                <tr><td>eˣ / x</td><td>f = 1/x, g = x</td><td>R′ + R = 1/x</td><td>none ✗</td><td>exponential integral Ei</td></tr>
+                <tr><td>sin x / x (Es 1, f₇)</td><td>via e^(±ix)/x</td><td>R′ ± iR = 1/x</td><td>none ✗</td><td>sine integral Si, which is why f₇ needed Si(π)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13 ERF -->
+      <section id="erf" class="part">
+        <div>
+          <h2>The error function: exact, but still not a number</h2>
+          <p>Since no elementary formula exists, we name the missing antiderivative. The <strong>error function</strong> and its complement are</p>
+          <div class="formula">erf(z) = (2/√π) ∫₀ᶻ e^(−t²) dt          erfc(z) = 1 − erf(z) = (2/√π) ∫_z^∞ e^(−t²) dt</div>
+          <p>Substituting t = u/√2 in the definition of Φ gives the exact representation</p>
+          <div class="formula">Φ(x) = ½ [ 1 + erf(x / √2) ] = ½ erfc(−x / √2)          Q(x) = 1 − Φ(x) = ½ erfc(x / √2)</div>
+          <p>This is "exact" in the same sense that √2, π or sin(1) are exact: erf is a precisely defined function with known derivative, symmetry, series and asymptotic behaviour, so formulas involving it can be manipulated symbolically without error. But a name is not a value. To print digits, something still has to run an algorithm, and this is equally true of sin and exp: Math.sin is itself range reduction plus a polynomial approximation. Moreover, JavaScript has <strong>no built-in erf at all</strong>, so on this page every value of Φ is computed by code written here.</p>
+          <p>The algorithms come straight from the representations above. Integrating e^(−t²) = Σ (−1)ᵏ t²ᵏ / k! term by term gives a power series for erf. Integrating by parts in the tail integral gives a continued fraction. And rational approximations fitted to erf give fast fixed-cost formulas.</p>
+        </div>
+      </section>
+
+      <!-- 14 METHODS -->
+      <section id="cdf-methods" class="part">
+        <div>
+          <h2>Numerical approaches</h2>
+
+          <h3>A. Numerical integration</h3>
+          <p>Use Φ(x) = ½ + ∫₀ˣ φ(t) dt and a composite rule with n panels of width h = x/n. The trapezoidal rule has error O(h²); Simpson's rule fits parabolas and has error O(h⁴). Simple and general, but each evaluation of Φ costs n + 1 exponentials, and the tail is obtained as 1 − Φ, so its relative accuracy collapses for large x.</p>
+          <div class="formula">Trapezoid:  ∫₀ˣ φ ≈ h [ ½φ(0) + φ(h) + … + φ((n−1)h) + ½φ(x) ]
+Simpson:    ∫₀ˣ φ ≈ (h/3) [ φ(0) + 4φ(h) + 2φ(2h) + 4φ(3h) + … + φ(x) ]</div>
+
+          <h3>B. Taylor series of erf (alternating)</h3>
+          <div class="formula">erf(z) = (2/√π) Σₖ (−1)ᵏ z^(2k+1) / ( k! (2k+1) ) = (2/√π) ( z − z³/3 + z⁵/10 − z⁷/42 + … )</div>
+          <p>Converges for every z, but the terms alternate in sign and first grow to about e^(z²) before shrinking. Adding numbers of size e^(z²) to obtain a result of size 1 throws away about z² / ln 10 digits through cancellation: at x = 6 (z ≈ 4.24) roughly 8 of the 16 digits are lost, and at x = 8 the result is meaningless.</p>
+
+          <h3>C. A positive series for Φ (Marsaglia, 2004)</h3>
+          <p>Write Φ(x) = ½ + φ(x)·S(x). Differentiating gives φ = φ′S + φS′ = φ(S′ − xS), so S must satisfy <strong>S′ − xS = 1</strong>, the very equation Liouville showed has no rational solution. It does have a power-series solution, with only positive terms:</p>
+          <div class="formula">S(x) = x + x³/3 + x⁵/(3·5) + x⁷/(3·5·7) + … = Σₖ x^(2k+1) / (2k+1)!!          Φ(x) = ½ + φ(x) S(x)</div>
+          <p>No cancellation inside the sum, each term is the previous one times x²/(2k+1), and about 40 terms give full double precision for |x| ≤ 2.5. Its weakness is again the tail: for large x, Q = ½ − φS subtracts two nearly equal numbers.</p>
+          <canvas id="partial-canvas" class="hw6-chart top-gap"></canvas>
+          <div class="hw6-legend" id="partial-legend"></div>
+          <p class="muted">Partial sums of ½ + φ(x)·S(x) with N terms against the exact Φ. Every partial sum is elementary (a polynomial times e^(−x²/2)); only the infinite sum equals Φ.</p>
+
+          <h3>D. Continued fraction for the tail (Laplace)</h3>
+          <div class="formula">Q(x) = 1 − Φ(x) = φ(x) / ( x + 1/( x + 2/( x + 3/( x + 4/( x + … ))))) ,   x &gt; 0</div>
+          <p>Evaluated from the bottom up with K levels, it computes the small tail Q directly, with no subtraction, so its <em>relative</em> accuracy stays high however small Q is. It converges quickly for large x and slowly near 0.</p>
+
+          <h3>E. Rational approximation of erf (Abramowitz &amp; Stegun 7.1.26)</h3>
+          <div class="formula">erfc(z) ≈ (a₁t + a₂t² + a₃t³ + a₄t⁴ + a₅t⁵) e^(−z²),   t = 1/(1 + 0.3275911 z),   z ≥ 0
+a₁ = 0.254829592, a₂ = −0.284496736, a₃ = 1.421413741, a₄ = −1.453152027, a₅ = 1.061405429</div>
+          <p>One exponential and a few multiplications, with absolute error below 1.5 × 10⁻⁷. Very fast, but fixed accuracy: its relative error in the tail grows without bound.</p>
+
+          <h3>F. My method: hybrid series + continued fraction</h3>
+          <p>Combine the strengths: use the positive series C where it converges fast and the continued fraction D where the tail is small, use symmetry for negative x, and always return both Φ(x) and Q(x) from the formula that computes the small one directly.</p>
+<pre><code>const SQRT_2PI = Math.sqrt(2 * Math.PI);
+const pdf = x =&gt; Math.exp(-x * x / 2) / SQRT_2PI;
+
+function normalCdf(x) {                       // returns { p: Φ(x), q: 1 − Φ(x) }
+  const a = Math.abs(x), f = pdf(a);
+  let p, q;
+  if (a &lt; 2.5) {                              // positive series: Φ = ½ + φ(a)·S(a)
+    let s = a, term = a, k = 0;
+    while (true) {
+      k++;
+      term *= a * a / (2 * k + 1);
+      if (s + term === s) break;              // stop when the term no longer changes s
+      s += term;
+    }
+    p = 0.5 + f * s;
+    q = 0.5 - f * s;
+  } else {                                    // continued fraction for the tail
+    const K = Math.ceil(10 + 300 / (a * a));  // fewer levels needed as a grows
+    let t = a;
+    for (let k = K; k &gt;= 1; k--) t = a + k / t;
+    q = f / t;
+    p = 1 - q;
+  }
+  return x &gt;= 0 ? { p, q } : { p: q, q: p };  // symmetry Φ(−x) = 1 − Φ(x)
+}</code></pre>
+          <p>The switch point 2.5 and the number of levels K = ⌈10 + 300/x²⌉ were tuned by testing against the reference: at x = 2.5 the series needs about 40 terms and the continued fraction about 58 levels; at x = 8 only 15 levels are needed.</p>
+        </div>
+      </section>
+
+      <!-- 15 REFERENCE -->
+      <section id="cdf-reference" class="part">
+        <div>
+          <h2>Comparison with a trusted reference</h2>
+          <p>Reference values come from <code>scipy.special.ndtr</code> (SciPy, based on the Cephes library), which computes Φ(x) and Φ(−x) = 1 − Φ(x) directly in double precision. They agree with the published Boost Math normal tables to all 16 digits at x = 1, 2, …, 6. The relative error is |computed − reference| / reference.</p>
+          <div class="panel">
+            <h3>My method (hybrid) at selected points</h3>
+            <div class="table-wrap"><table class="steps" id="ref-table"></table></div>
+          </div>
+          <div class="panel top-gap">
+            <h3>Relative error of the upper tail Q(x) = 1 − Φ(x), every method</h3>
+            <div class="table-wrap"><table class="steps" id="ref-all-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 16 ACCURACY -->
+      <section id="cdf-accuracy" class="part">
+        <div>
+          <h2>Accuracy and convergence</h2>
+          <p><strong>Accuracy over the whole range.</strong> Relative error of the <em>smaller</em> of Φ(x) and 1 − Φ(x) for x from −8 to 8 in steps of 0.01, against the SciPy reference. This is the demanding measure: an error of 10⁻¹⁶ in Φ(6) ≈ 1 − 10⁻⁹ is tiny in absolute terms, but it is a 10⁻⁷ error in the tail probability. Errors of 100% or more are drawn at the top.</p>
+          <div class="panel">
+            <canvas id="acc-canvas" class="hw6-chart tall"></canvas>
+            <div class="hw6-legend" id="acc-legend"></div>
+          </div>
+
+          <p class="top-gap"><strong>Integration rules.</strong> Absolute error of Φ(1) and Φ(3) against the number of panels n. Slopes −2 (trapezoid) and −4 (Simpson) confirm the O(h²) and O(h⁴) error laws, until rounding errors take over around 10⁻¹⁶.</p>
+          <div class="panel">
+            <canvas id="int-canvas" class="hw6-chart tall"></canvas>
+            <div class="hw6-legend" id="int-legend"></div>
+          </div>
+
+          <p class="top-gap"><strong>Series.</strong> Absolute error of Φ(x) against the number of terms N. Marsaglia's positive series converges smoothly to machine precision. The alternating erf series stalls: at x = 6 it never gets below about 10⁻¹⁰, because about 8 digits are lost to cancellation, and its early partial sums are off by more than 100%.</p>
+          <div class="panel">
+            <canvas id="series-canvas" class="hw6-chart tall"></canvas>
+            <div class="hw6-legend" id="series-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 17 EFFICIENCY -->
+      <section id="cdf-efficiency" class="part">
+        <div>
+          <h2>Efficiency</h2>
+          <p>Average time per evaluation of Φ over random x in [−6, 6], measured in this browser, with the worst errors over the grid x ∈ [−8, 8]. The work column counts the expensive operations per call.</p>
+          <div class="panel">
+            <div class="controls">
+              <button class="btn" id="cdf-eff-run" type="button">Run timing test</button>
+              <span class="progress" id="cdf-eff-progress"></span>
+            </div>
+            <div class="table-wrap"><table class="steps" id="cdf-eff-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 18 CONCLUSIONS ES 2 -->
+      <section id="es2-conclusions" class="part">
+        <div>
+          <h2>Conclusions (Es 2)</h2>
+          <ul id="es2-conclusion-list">
+            <li><strong>No elementary formula exists, provably.</strong> By Liouville's theorem, ∫ e^(−x²/2) dx would be elementary only if R′ − xR = 1 had a rational solution, and it has none. The normal CDF is therefore a genuinely new function.</li>
+            <li><strong>erf makes Φ exact, not computable.</strong> Φ(x) = ½[1 + erf(x/√2)] is an exact identity, useful for algebra and for reusing library code. Getting digits out of it still requires an algorithm, as it does for every special function and even for exp and sin.</li>
+            <li><strong>Integration rules work but are wasteful.</strong> Trapezoid and Simpson converge at their predicted rates (n⁻² and n⁻⁴), but need 100 to 1000 exponentials per value, which made them 10 to 100 times slower than the series methods in our timing test. Computing the tail as 1 − Φ also makes its relative accuracy degrade steadily with x, until it is lost completely by x ≈ 8.</li>
+            <li><strong>The alternating erf series is a numerical trap.</strong> Mathematically convergent everywhere, it loses about z²/ln 10 digits to cancellation and gives garbage for x around 8. The same function written as Marsaglia's positive series is stable.</li>
+            <li><strong>Fixed formulas are fast but limited.</strong> Abramowitz &amp; Stegun 7.1.26 needs a single exponential and is the fastest method here, but its accuracy is capped at about 10⁻⁷ absolute, and far less in relative terms in the tail.</li>
+            <li><strong>The hybrid method is accurate everywhere and cheap.</strong> Positive series for |x| &lt; 2.5, continued fraction for the tails, symmetry for x &lt; 0, and both Φ and 1 − Φ returned without subtraction. It matches SciPy to 13–14 significant digits across the whole range (worst relative error about 3.5 × 10⁻¹⁴, near x = ±2.5 where the two formulas meet), including tail probabilities as small as 10⁻²³, at a cost of one exponential and on average about 23 series terms or fraction levels. In our test it took about 100 ns per value, roughly four times slower than A&amp;S 7.1.26 but over a million times more accurate in the tails.</li>
+          </ul>
+        </div>
+      </section>
+
+      </div><!-- /es-col Es 2 -->
+      </div><!-- /es-columns -->
+
+      <!-- SOURCES -->
+      <section id="sources" class="part">
+        <div>
+          <h2>Sources</h2>
+          <ul class="sources">
+            <li>R. V. Hogg, J. W. McKean, A. T. Craig, <em>Introduction to Mathematical Statistics</em>, §3.4 The Normal Distribution. <a href="https://faculty.etsu.edu/gardnerr/4047/notes-Hogg-McKean-Craig/Hogg-McKean-Craig-3-4.pdf">Lecture notes (ETSU)</a>.</li>
+            <li>SciPy, <a href="https://docs.scipy.org/doc/scipy-1.17.0/reference/generated/scipy.special.ndtr.html"><code>scipy.special.ndtr</code></a>: reference values of Φ used in sections 15–17.</li>
+            <li>Boost Math, <a href="https://www.boost.org/doc/libs/latest/libs/math/example/normal_tables.cpp">normal distribution tables example</a>: independent check of the reference values.</li>
+            <li>M. Abramowitz, I. A. Stegun, <em>Handbook of Mathematical Functions</em>, formula 7.1.26 (rational approximation of erf).</li>
+            <li>G. Marsaglia, "Evaluating the Normal Distribution", <em>Journal of Statistical Software</em> 11(4), 2004: the positive series for Φ.</li>
+            <li>M. Rosenlicht, "Integration in Finite Terms", <em>American Mathematical Monthly</em> 79(9), 1972: modern statement and proof of Liouville's theorem.</li>
+            <li>H. Lebesgue, <em>Leçons sur l'intégration</em>, 1904; and any measure theory text for the Lebesgue criterion and monotone convergence (Es 1).</li>
           </ul>
         </div>
       </section>
@@ -292,5 +528,7 @@ function sampler(F, N) {
 
   <script src="../../assets/js/main.js"></script>
   <script src="script.js"></script>
+  <script src="cdf-reference.js"></script>
+  <script src="cdf.js"></script>
 </body>
 </html>

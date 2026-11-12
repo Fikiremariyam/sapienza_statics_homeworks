@@ -149,8 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   const legend = (el, series) => {
-    el.innerHTML = series.map(s => `<span><i style="background:${s.color}"></i>${s.name}</span>`).join("");
+    el.innerHTML = series.map(s => `<span><i style="${s.dash ? `background:none;height:0;border-top:2px dashed ${s.color}` : `background:${s.color}`}"></i>${s.name}</span>`).join("");
   };
+  // shared with cdf.js (Es 2)
+  window.HW6 = { setup, logChart, legend, colors, pow10, tick, facts };
 
   // fitted order p in error ≈ C·n^(−p), least squares on log–log points
   function order(pts) {
