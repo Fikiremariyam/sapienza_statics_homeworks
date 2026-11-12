@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework 6 · Riemann and Lebesgue Integration | Statistics Notebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <a href="../../index.html" class="brand">
+        <span class="brand-mark">σ²</span>
+        <span class="brand-text">Statistics<br><small>Notebook</small></span>
+      </a>
+      <nav class="side-nav" aria-label="Homework sections">
+        <a href="#homework">Homework</a>
+        <a href="#theory">Theory</a>
+        <a href="#explorer">Explorer</a>
+        <a href="#algorithms">Algorithms</a>
+        <a href="#results">Results</a>
+        <a href="#convergence">Convergence</a>
+        <a href="#efficiency">Efficiency</a>
+        <a href="#pathological">Pathological</a>
+        <a href="#conclusions">Conclusions</a>
+      </nav>
+      <div class="side-meta">
+        <span class="meta-label">Homework</span>
+        <strong>6 · Integration</strong>
+        <span class="meta-label">Student</span>
+        <strong>Fikiremariyam Babu Yalew</strong>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode"></button>
+    </aside>
+
+    <main class="content">
+
+      <header class="hw-header">
+        <a href="../../index.html#homeworks" class="back">← All homeworks</a>
+        <p class="eyebrow">Homework 6 · Es 1 · Integration</p>
+        <h1>Riemann and Lebesgue integration</h1>
+        <p class="lead">Two ways to measure the area under a curve: slice the domain (Riemann) or slice the range and measure preimages (Lebesgue). Both are implemented here, run on nine functions, and compared on accuracy, convergence and cost.</p>
+      </header>
+
+      <!-- 01 HOMEWORK -->
+      <section id="homework" class="part">
+        <span class="part-num">01</span>
+        <div>
+          <h2>Homework</h2>
+          <p>Choose a collection of interesting functions f₁, f₂, … and compute their integrals numerically, using approaches inspired by the <strong>Riemann</strong> definition (partitioning the domain into subintervals) and the <strong>Lebesgue</strong> definition (partitioning the range of function values into measurable subsets and considering their preimages in the domain). Compare the two approaches in terms of accuracy, convergence and computational efficiency. For Riemann-integrable functions, discuss whether the two approaches converge to the same value, and include examples where they behave differently.</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>#</th><th>Function</th><th>Domain</th><th>Why it is interesting</th></tr></thead>
+              <tbody>
+                <tr><td>f₁</td><td>sin x</td><td>[0, π]</td><td>smooth; flat top at x = π/2</td></tr>
+                <tr><td>f₂</td><td>x²</td><td>[0, 1]</td><td>smooth, monotone</td></tr>
+                <tr><td>f₃</td><td>1 if x &lt; ½, 3 if x ≥ ½</td><td>[0, 1]</td><td>jump discontinuity, takes only two values</td></tr>
+                <tr><td>f₄</td><td>|x − ½|</td><td>[0, 1]</td><td>continuous with a corner</td></tr>
+                <tr><td>f₅</td><td>1/√x</td><td>(0, 1]</td><td>unbounded: improper for Riemann</td></tr>
+                <tr><td>f₆</td><td>1 if x &lt; ½, 0 if x ≥ ½</td><td>[0, 1]</td><td>indicator function of [0, ½)</td></tr>
+                <tr><td>f₇</td><td>sin x / x</td><td>[0, π]</td><td>removable singularity at 0, no elementary antiderivative</td></tr>
+                <tr><td>D</td><td>Dirichlet: 1 on ℚ, 0 on ℝ∖ℚ</td><td>[0, 1]</td><td>not Riemann-integrable, Lebesgue integral 0</td></tr>
+                <tr><td>T</td><td>Thomae: 1/q at p/q, 0 on ℝ∖ℚ</td><td>[0, 1]</td><td>discontinuous on ℚ, yet Riemann-integrable</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 THEORY -->
+      <section id="theory" class="part">
+        <span class="part-num">02</span>
+        <div>
+          <h2>Two definitions of the integral</h2>
+
+          <h3>Riemann: partition the domain</h3>
+          <p>Split [a, b] into n subintervals of width Δx = (b − a)/n, choose a tag ξᵢ in each one, and add up the rectangles. The function is <em>Riemann-integrable</em> when every choice of tags gives the same limit, which is equivalent to the upper sum U (sup on each piece) and the lower sum L (inf on each piece) squeezing together.</p>
+          <div class="formula">Rₙ(f) = Σᵢ f(ξᵢ) · Δx            ∫ₐᵇ f dx = lim Rₙ(f)   (n → ∞)
+Uₙ = Σᵢ supᵢ f · Δx,   Lₙ = Σᵢ infᵢ f · Δx,   integrable ⇔ Uₙ − Lₙ → 0</div>
+
+          <h3>Lebesgue: partition the range</h3>
+          <p>Split the values 0 = y₀ &lt; y₁ &lt; … &lt; yₙ into levels. The set of points where f lands in a level, Eⱼ = f⁻¹([yⱼ, yⱼ₊₁)), is the <strong>preimage</strong> of that level, and m(Eⱼ) is its <strong>measure</strong> (its total length). This gives a simple function that approximates f from below. Summing the slabs instead of the columns gives the equivalent <em>layer-cake</em> formula, which is what we implement.</p>
+          <div class="formula">Lₙ(f) = Σⱼ yⱼ · m(Eⱼ),   Eⱼ = { x : yⱼ ≤ f(x) &lt; yⱼ₊₁ }
+∫ f dm = ∫₀^∞ m({ x : f(x) &gt; t }) dt        (layer-cake formula, f ≥ 0)</div>
+          <p>The function t ↦ m({f &gt; t}) is the <strong>distribution function</strong> of f. It is always non-increasing, and its shape, not the shape of f, decides how well the Lebesgue sums converge. For example, sin x on [0, π] has m({sin &gt; t}) = π − 2 arcsin t, which has an infinite slope at t = 1 because sin is flat at its maximum.</p>
+
+          <h3>The theorems we test</h3>
+          <ul>
+            <li><strong>Lebesgue's criterion.</strong> A bounded function on [a, b] is Riemann-integrable if and only if its set of discontinuities has measure zero. f₃, f₄, f₆ qualify (one bad point), Thomae qualifies (discontinuous on the countable set ℚ), Dirichlet does not (discontinuous everywhere).</li>
+            <li><strong>Agreement.</strong> If f is Riemann-integrable on [a, b], it is Lebesgue-integrable and the two integrals are equal. So on f₁–f₄, f₆, f₇ and T both numerical schemes must converge to the same number.</li>
+            <li><strong>Monotone convergence.</strong> For f ≥ 0, if 0 ≤ fₖ ↑ f then ∫ fₖ ↑ ∫ f. Applied to the truncations min(f, H) as H → ∞, it lets the Lebesgue integral handle the unbounded f₅ directly: ∫₀¹ 1/√x dx = 2, with no "improper" limit needed in the definition.</li>
+            <li><strong>Countable sets have measure zero.</strong> ℚ ∩ [0, 1] can be listed q₁, q₂, …; covering qₖ with an interval of length ε/2ᵏ covers ℚ with total length ε. Hence ∫ Dirichlet = 1 · m(ℚ ∩ [0,1]) = 0.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 03 EXPLORER -->
+      <section id="explorer" class="part">
+        <span class="part-num">03</span>
+        <div>
+          <h2>Interactive explorer</h2>
+          <p>Columns are Riemann rectangles (midpoint tags). Horizontal slabs are Lebesgue levels: each slab covers exactly the preimage { x : f(x) &gt; t } at its middle height t, which can be several disjoint pieces.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Function <select id="ex-f"></select></label>
+              <label>Method
+                <select id="ex-m">
+                  <option value="riemann">Riemann (slice x)</option>
+                  <option value="lebesgue">Lebesgue (slice y)</option>
+                </select>
+              </label>
+              <label>n = <span id="ex-n-val">8</span>
+                <input id="ex-n" type="range" min="1" max="60" step="1" value="8">
+              </label>
+            </div>
+            <canvas id="ex-canvas" class="hw6-chart tall"></canvas>
+            <div class="facts" id="ex-facts"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 ALGORITHMS -->
+      <section id="algorithms" class="part">
+        <span class="part-num">04</span>
+        <div>
+          <h2>The algorithms</h2>
+          <p>Five schemes are compared. All take a number of pieces n: subintervals for Riemann, levels for Lebesgue.</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Scheme</th><th>What it partitions</th><th>Formula</th><th>Needs</th></tr></thead>
+              <tbody>
+                <tr><td>Riemann left</td><td>domain</td><td>Σ f(a + iΔx) Δx</td><td>n values of f</td></tr>
+                <tr><td>Riemann midpoint</td><td>domain</td><td>Σ f(a + (i+½)Δx) Δx</td><td>n values of f</td></tr>
+                <tr><td>Lebesgue lower</td><td>range</td><td>Σ Δt · m({f ≥ jΔt})  (= Σ yⱼ m(Eⱼ))</td><td>n preimage measures</td></tr>
+                <tr><td>Lebesgue midpoint</td><td>range</td><td>Σ Δt · m({f &gt; (j−½)Δt})</td><td>n preimage measures</td></tr>
+                <tr><td>Lebesgue sampled</td><td>range</td><td>same, with m estimated from N sorted samples of f</td><td>N values of f + a sort</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The levels run from 0 to the maximum H of f, so Δt = H/n. For the unbounded f₅ we integrate min(f, H) with H = √n, so the levels go higher as n grows. That is the monotone convergence theorem turned into an algorithm.</p>
+          <p>The hard part of Lebesgue is the <strong>measure of a preimage</strong>. Two ways to get it:</p>
+          <ul>
+            <li><strong>Analytic preimage:</strong> solve f(x) &gt; t by hand. For example {x² &gt; t} = (√t, 1], length 1 − √t. For sin x / x, which is decreasing on [0, π], the preimage is [0, xₜ) and xₜ is found by bisection. Exact, but needs the inverse of f, which a general method does not have.</li>
+            <li><strong>Sampled preimage:</strong> evaluate f on a fine grid of N = 2¹⁷ points, sort the values once, then count how many lie above each level with a binary search. Generic, but every measure is now "number of grid points × grid width". The method is secretly built on a fine Riemann grid, and it can never be more accurate than that grid.</li>
+          </ul>
+<pre><code>// Riemann: slice the domain
+function riemann(F, n, tag) {               // tag = 0 (left) or 0.5 (midpoint)
+  const h = (F.b - F.a) / n;
+  let s = 0;
+  for (let i = 0; i &lt; n; i++) s += F.f(F.a + (i + tag) * h);
+  return s * h;
+}
+
+// Lebesgue: slice the range, add up  Δt · m({ f &gt; t })
+function lebesgue(F, n, kind, measure) {    // measure(t, ge) = m({f &gt; t}) or m({f ≥ t})
+  const H  = F.unbounded ? Math.sqrt(n) : F.max;   // truncation min(f, H)
+  const dt = H / n;
+  let s = 0;
+  for (let j = 1; j &lt;= n; j++) {
+    s += kind === "lower" ? measure(j * dt, true)     // classic lower simple function
+                          : measure((j - 0.5) * dt, false);
+  }
+  return s * dt;
+}
+
+// Sampled preimage measure: sort N samples once, then binary-search each level
+function sampler(F, N) {
+  const h = (F.b - F.a) / N, ys = new Float64Array(N);
+  for (let i = 0; i &lt; N; i++) ys[i] = F.f(F.a + (i + 0.5) * h);
+  ys.sort();
+  return (t, ge) =&gt; (N - firstIndex(ys, t, ge)) * h;    // points above t × grid width
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- 05 RESULTS -->
+      <section id="results" class="part">
+        <span class="part-num">05</span>
+        <div>
+          <h2>Results at n = 1000</h2>
+          <p>Value of each scheme with n = 1000 subintervals or levels, and its absolute error underneath. The exact values come from antiderivatives, except sin x / x, whose exact value is the sine integral Si(π) ≈ 1.8519370520.</p>
+          <p>Two things stand out already. With n = 1000 (even) the jump at x = ½ falls exactly on a grid point, so Riemann is exact for f₃ and f₆, while Lebesgue misses f₃ by 5 × 10⁻⁴ because the value 1 is not a multiple of the level spacing Δt = 3/1000. And for f₅ the left Riemann sum is ∞, since it evaluates 1/√0.</p>
+          <div class="panel">
+            <div class="table-wrap"><table class="steps results" id="res-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 CONVERGENCE -->
+      <section id="convergence" class="part">
+        <span class="part-num">06</span>
+        <div>
+          <h2>Convergence</h2>
+          <p>Error against n on log–log axes. A straight line with slope −p means error ∝ n⁻ᵖ: doubling n divides the error by 2ᵖ. Odd values of n are used so that a jump at x = ½ never lands on a grid point by luck. Hollow circles at the bottom mark an error of exactly zero.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Function <select id="cv-f"></select></label>
+            </div>
+            <canvas id="cv-canvas" class="hw6-chart tall"></canvas>
+            <div class="hw6-legend" id="cv-legend"></div>
+            <h3 class="top-gap">Fitted order p (error ∝ n⁻ᵖ), all functions</h3>
+            <div class="table-wrap"><table class="steps" id="order-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 EFFICIENCY -->
+      <section id="efficiency" class="part">
+        <span class="part-num">07</span>
+        <div>
+          <h2>Computational efficiency</h2>
+          <p>For each scheme: the smallest n (doubling from 5 up to about 10⁶) that reaches an error below 10⁻⁶, and the time that run took in this browser. The cost column says what each piece needs. "—" means the target was not reached within the limit.</p>
+          <div class="panel">
+            <div class="controls">
+              <button class="btn" id="eff-run" type="button">Run efficiency test</button>
+              <span class="progress" id="eff-progress"></span>
+            </div>
+            <div class="table-wrap"><table class="steps" id="eff-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 PATHOLOGICAL -->
+      <section id="pathological" class="part">
+        <span class="part-num">08</span>
+        <div>
+          <h2>Pathological functions: where the two definitions part ways</h2>
+
+          <div class="chart-grid">
+            <figure><canvas id="dir-plot" class="hw6-chart"></canvas><figcaption>Dirichlet: 1 on every rational, 0 on every irrational. Both "lines" are dense.</figcaption></figure>
+            <figure><canvas id="tho-plot" class="hw6-chart"></canvas><figcaption>Thomae ("popcorn"): f(p/q) = 1/q, drawn for q ≤ 50.</figcaption></figure>
+          </div>
+
+          <h3 class="top-gap">Dirichlet function</h3>
+          <p>Every subinterval contains rationals and irrationals, so sup = 1 and inf = 0 on each piece: Uₙ = 1 and Lₙ = 0 for every n. The tagged sum depends on the tags, so there is no Riemann limit. Below, "irrational tags" are ξᵢ = (i + ½)/n + √2/(4n), which are irrational because √2 is; the page tracks them symbolically as (rational part, coefficient of √2), since a computer cannot store an irrational number.</p>
+          <div class="panel">
+            <div class="table-wrap"><table class="steps" id="dir-table"></table></div>
+          </div>
+          <p>Lebesgue has no difficulty: for 0 &lt; t &lt; 1 the preimage {f &gt; t} is ℚ ∩ [0, 1], a countable set of measure 0, so the layer-cake integral is exactly 0.</p>
+          <div class="panel">
+            <h3>Why a computer cannot even see the problem</h3>
+            <p>Every finite floating-point number is m · 2ᵉ, a fraction with a power-of-two denominator. So a naive <code>isRational(x)</code> must return true for every input, and any numerical method returns 1 for Dirichlet. Pick a number to see how it is really stored:</p>
+            <div class="controls">
+              <label>Number
+                <select id="fl-sel">
+                  <option value="0.1">0.1</option>
+                  <option value="1/3">1/3</option>
+                  <option value="sqrt2" selected>√2</option>
+                  <option value="pi">π</option>
+                </select>
+              </label>
+            </div>
+            <div class="facts" id="fl-out"></div>
+          </div>
+
+          <h3 class="top-gap">Thomae's function</h3>
+          <p>Thomae is discontinuous at every rational but continuous at every irrational. The discontinuities form a countable set, so by Lebesgue's criterion it is Riemann-integrable. Upper sums go to 0: in a short interval every fraction has a large denominator q, so sup f = 1/q is small. Lower sums are 0. Lebesgue: for t &gt; 0 the set {f &gt; t} contains only fractions with q &lt; 1/t, a finite set of measure 0, so the integral is 0.</p>
+          <div class="panel">
+            <div class="table-wrap"><table class="steps" id="tho-table"></table></div>
+            <canvas id="tho-conv" class="hw6-chart top-gap"></canvas>
+            <div class="hw6-legend" id="tho-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 CONCLUSIONS -->
+      <section id="conclusions" class="part">
+        <span class="part-num">09</span>
+        <div>
+          <h2>Conclusions</h2>
+          <ul>
+            <li><strong>Same limit for every Riemann-integrable function.</strong> On sin x, x², the step functions, |x − ½|, sin x / x and Thomae, all schemes converge to the exact value, as the agreement theorem predicts. The differences are only in how fast.</li>
+            <li><strong>Riemann accuracy depends on the smoothness of f in x.</strong> Midpoint sums converge like n⁻² for smooth f (sin x, x², sin x / x), left sums like n⁻¹. The exception is when f(a) = f(b), as for sin x and |x − ½|: then the left sum equals the trapezoidal rule and also reaches order 2. A jump spoils every Riemann scheme back to n⁻¹, an error of about jump × Δx / 2 whenever the jump falls inside a piece. A corner like |x − ½| costs nothing, since the function stays continuous.</li>
+            <li><strong>Lebesgue accuracy depends on the distribution function m({f &gt; t}), not on f.</strong> Functions that take few values are easy for Lebesgue: f₆ is exact for every n, and f₃ is exact whenever a level lands on the value 1 (n a multiple of 3), otherwise its error is of order Δt. |x − ½| has the straight-line distribution function 1 − 2t, so midpoint levels are exact. Smooth functions can be harder: sin is flat at its top and x² flat at its bottom, which gives their distribution functions an infinite slope and lowers the midpoint-level order from 2 to about 1.5.</li>
+            <li><strong>Unbounded functions behave differently.</strong> For 1/√x the left Riemann sum is undefined (f(0) = ∞), and the proper Riemann integral does not exist, only the improper limit. Lebesgue handles it directly by truncating at height H and using monotone convergence: the measure m({f &gt; t}) = 1/t² is exact, and the only error is the cut-off tail ∫_H^∞ t⁻² dt = 1/H. With H = √n both approaches converge like n^(−½).</li>
+            <li><strong>Efficiency depends on the function, but in general favours Riemann.</strong> On smooth functions, midpoint Riemann reaches an error of 10⁻⁶ with 4–8 times fewer pieces than midpoint Lebesgue, and for sin x / x each Lebesgue level costs a 60-step bisection. On step functions the roles reverse: Lebesgue is exact with a handful of levels, while Riemann needs about a million subintervals. But Lebesgue's speed relies on knowing the preimages. A general method has to sample f on a grid and sort the values, which costs more than the Riemann sum it is built on, and its error stops at the grid's own error (visible for |x − ½|).</li>
+            <li><strong>Pathological functions show where Lebesgue wins in theory.</strong> Dirichlet has no Riemann integral (U = 1, L = 0 forever) but a clean Lebesgue integral of 0. Thomae is integrable in both senses, with value 0. Neither can be computed by sampling, because floating-point numbers are all rational: Dirichlet always reads as 1. These cases are settled by the measure theory, not by the numerics.</li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <span>© <span data-year></span> Fikiremariyam Babu Yalew</span>
+        <a href="../../index.html#homeworks">← Back to homeworks</a>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
