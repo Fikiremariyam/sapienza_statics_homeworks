@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homework 6 · Contingency Tables and the Chi-square Test </title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <a href="../../index.html" class="brand">
+        <span class="brand-mark">σ²</span>
+        
+      </a>
+      <nav class="side-nav" aria-label="Homework sections">
+        <a href="#homework">Homework</a>
+        <a href="#theory">Theory</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#table">Contingency table</a>
+        <a href="#frequencies">Frequencies</a>
+        <a href="#expected">Expected</a>
+        <a href="#chisquare">Chi-square</a>
+        <a href="#interpretation">Interpretation</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#causality">Causality</a>
+        <a href="#code">Code</a>
+        <a href="#conclusions">Conclusions</a>
+      </nav>
+      <div class="side-meta">
+        <span class="meta-label">Homework</span>
+        <strong>6 · Independence</strong>
+        <span class="meta-label">Student</span>
+        <strong>Fikiremariyam Babu Yalew</strong>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode"></button>
+    </aside>
+
+    <main class="content hw7">
+
+      <header class="hw-header">
+        <a href="../../index.html#homeworks" class="back">← All homeworks</a>
+        <p class="eyebrow">Homework 7 · Contingency tables · χ² test</p>
+        <h1>Are two variables independent?</h1>
+        <p class="lead">From raw pairs (X, F) to a contingency table, marginal and conditional frequencies, expected counts under independence, the chi-square statistic and its p-value. Then what the answer means, and what it does not mean: association is not causation.</p>
+      </header>
+
+      <!-- HOMEWORK -->
+      <section id="homework" class="part">
+        <div>
+          <h2>Homework</h2>
+          <p>Given any bivariate dataset (X, F), programmatically construct the <strong>contingency table</strong> and calculate <strong>conditional and marginal frequencies</strong>. Compute the <strong>expected frequencies</strong> under the assumption of independence. Calculate the <strong>chi-square statistic</strong> (optional: also the <strong>p-value</strong>).</p>
+          <p>Recall the theoretical concepts of <strong>independence</strong> in statistics and probability. Interpret the results to determine whether the two variables are statistically independent or dependent. Briefly discuss the conclusions, distinguishing <strong>statistical association</strong> from <strong>causality</strong>.</p>
+          <div class="panel">
+            <h3>Abstract of the page </h3>
+            <ul class="tight">
+              <li>Every result below is computed in your browser from <strong>raw records</strong> (one row per individual), never from a ready-made table.</li>
+              <li>You can switch between real datasets, a simulated one where you control the dependence, or <strong>paste your own</strong> two-column data. All sections update.</li>
+              <li>The p-value is computed two ways: from the χ² distribution (exact incomplete gamma function) and by a <strong>permutation test</strong> that needs no approximation.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- THEORY -->
+      <section id="theory" class="part">
+        <div>
+          <h2>Independence: probability and statistics</h2>
+
+          <h3>In probability</h3>
+          <p>Two events A and B are <strong>independent</strong> when knowing that one happened does not change the probability of the other:</p>
+          <div class="formula">P(A ∩ B) = P(A) · P(B)      ⇔      P(A | B) = P(A)   (when P(B) &gt; 0)</div>
+          <p>Two discrete random variables X and F are independent when this holds for <em>every</em> pair of values: the joint distribution is the product of the marginals, or equivalently the conditional distribution of F is the same whatever value X takes.</p>
+          <div class="formula">P(X = xᵢ, F = fⱼ) = P(X = xᵢ) · P(F = fⱼ)    for all i, j
+P(F = fⱼ | X = xᵢ) = P(F = fⱼ)                  for all i, j</div>
+          <p>Independence is symmetric (X ⫫ F ⇔ F ⫫ X). It is not the same as <em>disjoint</em>: two disjoint events with positive probability are always dependent, since one happening makes the other impossible.</p>
+
+          <h3>In statistics: the sample version</h3>
+          <p>We never see P, only n observed pairs. Replacing probabilities by relative frequencies gives <strong>empirical (descriptive) independence</strong>:</p>
+          <div class="formula">fᵢⱼ = fᵢ· · f·ⱼ        ⇔        nᵢⱼ / nᵢ· = n·ⱼ / n  (all row profiles equal)        ⇔        nᵢⱼ = nᵢ· n·ⱼ / n = eᵢⱼ</div>
+          <p>So under independence every cell would contain exactly its <strong>expected count</strong> eᵢⱼ. In a real sample this almost never happens exactly, even when the population really is independent, because of random variation. The question becomes: <em>is the gap between nᵢⱼ and eᵢⱼ bigger than chance alone would produce?</em></p>
+
+          <div class="chart-grid">
+            <figure class="idea">
+              <div class="mini-mosaic indep">
+                <div style="flex:3"><span style="flex:2"></span><span style="flex:1"></span></div>
+                <div style="flex:2"><span style="flex:2"></span><span style="flex:1"></span></div>
+                <div style="flex:1"><span style="flex:2"></span><span style="flex:1"></span></div>
+              </div>
+              <figcaption><strong>Independent.</strong> Column widths = how common each X is. Inside every column F splits the same way, so the horizontal lines run straight across.</figcaption>
+            </figure>
+            <figure class="idea">
+              <div class="mini-mosaic dep">
+                <div style="flex:3"><span style="flex:5"></span><span style="flex:1"></span></div>
+                <div style="flex:2"><span style="flex:2"></span><span style="flex:1"></span></div>
+                <div style="flex:1"><span style="flex:1"></span><span style="flex:3"></span></div>
+              </div>
+              <figcaption><strong>Dependent.</strong> The split of F changes from column to column: knowing X tells you something about F. The lines become a staircase.</figcaption>
+            </figure>
+          </div>
+
+          <h3>The chi-square statistic and test</h3>
+          <p>Pearson (1900) measured the gap with one number, which adds up the squared deviations, each scaled by what was expected:</p>
+          <div class="formula">χ² = Σᵢ Σⱼ (nᵢⱼ − eᵢⱼ)² / eᵢⱼ        (equivalently  χ² = n · ( Σᵢ Σⱼ nᵢⱼ² / (nᵢ· n·ⱼ) − 1 ) )
+H₀: X and F are independent        H₁: X and F are dependent
+Under H₀ and for large n:  χ² ≈ χ²-distribution with df = (r − 1)(c − 1)
+p-value = P( χ²_df ≥ χ²_observed )        reject H₀ when p &lt; α</div>
+          <div class="df-demo">
+            <div class="df-grid" aria-hidden="true">
+              <span class="free">•</span><span class="free">•</span><span class="free">•</span><span class="fix">←</span>
+              <span class="free">•</span><span class="free">•</span><span class="free">•</span><span class="fix">←</span>
+              <span class="fix">↑</span><span class="fix">↑</span><span class="fix">↑</span><span class="fix">↖</span>
+            </div>
+            <p><strong>Why (r − 1)(c − 1) degrees of freedom?</strong> Once the row and column totals are fixed, you can choose the purple cells freely; the last cell of each row and column is then forced by the totals. A 3 × 4 table has 2 × 3 = 6 free cells, so df = 6.</p>
+          </div>
+          <p>χ² = 0 means perfect empirical independence; larger means further from it. But χ² grows with the sample size (doubling every count doubles χ²), so to describe the <em>strength</em> of the association we also report <strong>Cramér's V</strong>, which is scaled to lie between 0 (independent) and 1 (perfectly associated):</p>
+          <div class="formula">V = √( χ² / ( n · min(r − 1, c − 1) ) )</div>
+          <p>The χ² approximation is reliable when observations are independent of each other and expected counts are not too small (the usual rule: every eᵢⱼ ≥ 5). When that fails, the permutation test below gives a p-value without the approximation.</p>
+        </div>
+      </section>
+
+      <!-- DATASET -->
+      <section id="dataset" class="part">
+        <div>
+          <h2>The dataset (X, F)</h2>
+          <p>Pick a dataset. Each one is a list of raw records (xₖ, fₖ), one per individual; the program builds everything else from that list.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>Dataset
+                <select id="ds-select">
+                  <option value="titanic">Titanic: travel class × survived (2,201 people)</option>
+                  <option value="haireye">Hair colour × eye colour (592 students)</option>
+                  <option value="firewall">Simulated firewall log: protocol × verdict</option>
+                  <option value="custom">Paste your own data</option>
+                </select>
+              </label>
+            </div>
+            <p id="ds-desc" class="muted"></p>
+            <div id="ds-firewall" class="controls" hidden>
+              <label>Dependence strength = <span id="fw-alpha-val">0.50</span>
+                <input id="fw-alpha" type="range" min="0" max="1" step="0.05" value="0.5">
+              </label>
+              <label>n = <span id="fw-n-val">1000</span>
+                <input id="fw-n" type="range" min="50" max="5000" step="50" value="1000">
+              </label>
+              <button class="btn" id="fw-resample" type="button">New random sample</button>
+            </div>
+            <div id="ds-custom" hidden>
+              <label class="block">One record per line, two columns X and F separated by a comma, semicolon or tab:
+                <textarea id="csv-text" rows="8" spellcheck="false">protocol,verdict
+TCP,Allowed
+TCP,Allowed
+UDP,Blocked
+ICMP,Blocked
+TCP,Blocked
+UDP,Allowed
+TCP,Allowed
+ICMP,Blocked
+UDP,Allowed
+TCP,Allowed</textarea>
+              </label>
+              <div class="controls">
+                <label class="inline"><input id="csv-header" type="checkbox" checked> First line is a header</label>
+                <button class="btn" id="csv-apply" type="button">Analyse this data</button>
+                <span id="csv-msg" class="muted"></span>
+              </div>
+            </div>
+            <div class="facts" id="ds-facts"></div>
+            <h3 class="top-gap">First raw records</h3>
+            <div class="table-wrap"><table class="steps narrow" id="ds-preview"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTINGENCY TABLE -->
+      <section id="table" class="part">
+        <div>
+          <h2>The contingency table</h2>
+          <p>The program walks once through the records and adds 1 to cell (i, j) each time it meets X = xᵢ and F = fⱼ. The result is the two-way table of <strong>absolute joint frequencies</strong> nᵢⱼ, with the row totals nᵢ· and column totals n·ⱼ in the margins.</p>
+          <div class="panel">
+            <div class="table-wrap"><table class="steps ctable" id="ct-counts"></table></div>
+          </div>
+          <h3 class="top-gap">Mosaic plot: the same table as a picture</h3>
+          <p>Each column is one value of X, as wide as its share of the data. Inside it, each tile is as tall as the share of F in that group, which is the conditional frequency. Dashed lines show where the tiles would end <em>if X and F were independent</em>. Colour shows how far each cell is from that: blue = more than expected, pink = fewer.</p>
+          <div class="panel">
+            <canvas id="mosaic" class="hw7-chart tall"></canvas>
+            <div class="resid-legend">
+              <span>fewer than expected</span>
+              <i class="bar"></i>
+              <span>more than expected</span>
+              <span class="muted">(Pearson residual (n − e)/√e from −4 to +4)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FREQUENCIES -->
+      <section id="frequencies" class="part">
+        <div>
+          <h2>Marginal and conditional frequencies</h2>
+          <p>Four ways to read the same table. The <strong>marginal</strong> frequencies describe each variable on its own (the totals). The <strong>conditional</strong> frequencies describe one variable inside a group defined by the other.</p>
+          <div class="panel">
+            <div class="tabs" role="tablist" id="freq-tabs">
+              <button type="button" data-view="counts" class="on">Absolute nᵢⱼ</button>
+              <button type="button" data-view="joint">Relative joint fᵢⱼ</button>
+              <button type="button" data-view="rowcond">Conditional F | X</button>
+              <button type="button" data-view="colcond">Conditional X | F</button>
+            </div>
+            <div class="table-wrap"><table class="steps ctable" id="freq-table"></table></div>
+            <div class="formula small" id="freq-formula"></div>
+            <p class="muted" id="freq-note"></p>
+          </div>
+          <h3 class="top-gap">Marginal distributions</h3>
+          <div class="chart-grid">
+            <figure><canvas id="marg-x" class="hw7-chart"></canvas><figcaption id="marg-x-cap">Marginal distribution of X</figcaption></figure>
+            <figure><canvas id="marg-f" class="hw7-chart"></canvas><figcaption id="marg-f-cap">Marginal distribution of F</figcaption></figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPECTED -->
+      <section id="expected" class="part">
+        <div>
+          <h2>Expected frequencies under independence</h2>
+          <p>If X and F were independent, the share of each F would be the same in every row, equal to the overall share n·ⱼ / n. A row with nᵢ· records would then contain nᵢ· · n·ⱼ / n records in column j. That is the <strong>expected count</strong>; it keeps exactly the same margins as the observed table.</p>
+          <div class="formula">eᵢⱼ = nᵢ· · n·ⱼ / n        (row total × column total ÷ grand total)</div>
+          <div class="panel">
+            <h3>Worked example</h3>
+            <div class="formula small" id="exp-example"></div>
+            <div class="table-wrap top-gap"><table class="steps ctable" id="exp-table"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHI-SQUARE -->
+      <section id="chisquare" class="part">
+        <div>
+          <h2>The chi-square statistic and p-value</h2>
+          <p>Each cell shows observed n, expected e, and its contribution (n − e)² / e to χ². The colour is the sign and size of the deviation, so you can see <em>where</em> the dependence lives.</p>
+          <div class="panel">
+            <div class="table-wrap"><table class="steps ctable oe" id="oe-table"></table></div>
+          </div>
+
+          <div class="panel top-gap">
+            <div class="controls">
+              <label>Significance level α
+                <select id="alpha-select">
+                  <option value="0.1">0.10</option>
+                  <option value="0.05" selected>0.05</option>
+                  <option value="0.01">0.01</option>
+                  <option value="0.001">0.001</option>
+                </select>
+              </label>
+            </div>
+            <div class="facts" id="chi-facts"></div>
+            <h3 class="top-gap">Where the observed χ² falls under H₀</h3>
+            <canvas id="chi-dist" class="hw7-chart tall"></canvas>
+            <div class="hw7-legend" id="chi-legend"></div>
+            <p class="muted">The curve is the χ² density with the table's degrees of freedom: the values χ² would take if H₀ were true. The light region is the rejection region (area α). The p-value is the area to the right of the observed value.</p>
+          </div>
+
+          <div class="panel top-gap">
+            <h3>Second opinion: permutation test</h3>
+            <p>Independence means the F labels could have been handed out to the records in any order. So we shuffle the F column at random (keeping both margins), rebuild the table and recompute χ², many times. The share of shuffles with a χ² at least as large as the observed one is a p-value that needs no large-sample approximation.</p>
+            <div class="controls">
+              <label>Shuffles
+                <select id="perm-b">
+                  <option value="1000">1,000</option>
+                  <option value="2000" selected>2,000</option>
+                  <option value="10000">10,000</option>
+                </select>
+              </label>
+              <button class="btn" id="perm-run" type="button">Run again</button>
+            </div>
+            <canvas id="perm-hist" class="hw7-chart"></canvas>
+            <div class="hw7-legend" id="perm-legend"></div>
+            <div class="facts" id="perm-facts"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERPRETATION -->
+      <section id="interpretation" class="part">
+        <div>
+          <h2>Interpretation</h2>
+          <div class="verdict" id="verdict"></div>
+          <div id="interp"></div>
+        </div>
+      </section>
+
+      <!-- SIMULATION -->
+      <section id="simulation" class="part">
+        <div>
+          <h2>Simulation: what the test sees, and what it misses</h2>
+          <p>Here the truth is known, because we generate it. Each sample is a firewall log of n connections: the protocol X is TCP, UDP or ICMP; the verdict F is Allowed or Blocked. With strength 0 the block rate is the same for every protocol (true independence). As the strength grows, ICMP gets blocked more and TCP less. We draw 400 samples and look at the 400 p-values.</p>
+          <div class="panel">
+            <div class="controls">
+              <label>True dependence strength = <span id="sim-alpha-val">0.00</span>
+                <input id="sim-alpha" type="range" min="0" max="1" step="0.05" value="0">
+              </label>
+              <label>n per sample = <span id="sim-n-val">200</span>
+                <input id="sim-n" type="range" min="50" max="3000" step="50" value="200">
+              </label>
+              <button class="btn" id="sim-run" type="button">Draw 400 new samples</button>
+            </div>
+            <div class="chart-grid">
+              <figure><canvas id="sim-p" class="hw7-chart"></canvas><figcaption>Histogram of the 400 p-values. Bars left of the line (p &lt; 0.05) are samples where the test declares dependence.</figcaption></figure>
+              <figure><canvas id="sim-mosaic" class="hw7-chart"></canvas><figcaption>Mosaic plot of one of the samples.</figcaption></figure>
+            </div>
+            <div class="facts" id="sim-facts"></div>
+          </div>
+          <ul>
+            <li><strong>Strength 0:</strong> the p-values are spread evenly between 0 and 1, and about 5 % fall below 0.05. Those are <em>false alarms</em> (type I errors): with α = 0.05, one test in twenty finds "dependence" in independent data.</li>
+            <li><strong>Small strength, small n:</strong> many p-values stay above 0.05 although the variables really are dependent (type II errors). "Not significant" does not mean "independent".</li>
+            <li><strong>Small strength, large n:</strong> nearly every test rejects H₀ while Cramér's V stays small: a statistically significant but weak association.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- CAUSALITY -->
+      <section id="causality" class="part">
+        <div>
+          <h2>Association is not causation</h2>
+          <p>The χ² test answers one question: <em>are X and F statistically associated in this population?</em> It cannot say <em>why</em>. A significant result is compatible with several explanations:</p>
+          <div class="table-wrap">
+            <table class="compare">
+              <thead><tr><th>Explanation</th><th>Structure</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td>X causes F</td><td>X → F</td><td>A firewall rule blocks ICMP, so the protocol determines the verdict.</td></tr>
+                <tr><td>F causes X (reverse causation)</td><td>F → X</td><td>Attackers who get blocked switch protocol and retry.</td></tr>
+                <tr><td>A third variable causes both (confounding)</td><td>X ← Z → F</td><td>Department choice, in the Berkeley example below.</td></tr>
+                <tr><td>Selection bias</td><td>only some records were collected</td><td>A log that only keeps flagged connections.</td></tr>
+                <tr><td>Chance</td><td>none</td><td>The 5 % false alarms seen in the simulation.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The test is also <strong>symmetric</strong>: χ² is the same if we swap the roles of X and F, so it carries no information about direction.</p>
+
+          <h3 class="top-gap">Case study: UC Berkeley graduate admissions, 1973</h3>
+          <p>A famous real dataset (Bickel, Hammel and O'Connell, <em>Science</em>, 1975). Overall, men were admitted much more often than women, and the χ² test is overwhelming. It looks like evidence of discrimination against women.</p>
+          <div class="panel">
+            <div class="table-wrap"><table class="steps ctable narrow" id="berk-agg"></table></div>
+            <div class="facts" id="berk-agg-facts"></div>
+          </div>
+          <p>Now split the same applicants by the department they applied to and test each department separately:</p>
+          <div class="panel">
+            <canvas id="berk-chart" class="hw7-chart tall"></canvas>
+            <div class="hw7-legend" id="berk-legend"></div>
+            <div class="table-wrap top-gap"><table class="steps" id="berk-dept"></table></div>
+          </div>
+          <div class="dag-row">
+            <svg class="dag" viewBox="0 0 420 170" role="img" aria-label="Gender affects department choice, department affects admission">
+              <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+              <g font-family="Inter, system-ui, sans-serif" font-size="14" text-anchor="middle">
+                <rect x="10" y="110" width="110" height="40" rx="8" class="node"/><text x="65" y="135">Gender</text>
+                <rect x="155" y="12" width="110" height="40" rx="8" class="node z"/><text x="210" y="37">Department</text>
+                <rect x="300" y="110" width="110" height="40" rx="8" class="node"/><text x="355" y="135">Admission</text>
+                <line x1="90" y1="108" x2="180" y2="56" stroke="currentColor" stroke-width="2" marker-end="url(#arr)"/>
+                <line x1="240" y1="56" x2="330" y2="108" stroke="currentColor" stroke-width="2" marker-end="url(#arr)"/>
+                <line x1="122" y1="130" x2="296" y2="130" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+                <text x="210" y="122" font-size="12" class="muted-text">direct effect? (small)</text>
+              </g>
+            </svg>
+            <div>
+              <p>Inside departments the gap disappears: only department A shows a significant difference, and it <em>favours women</em>. The overall association was produced by a third variable. Women applied mostly to the departments that admit few applicants of either sex (C–F); men applied mostly to the departments that admit many (A, B).</p>
+              <p>This reversal is <strong>Simpson's paradox</strong>. In the language of this homework: Gender and Admission are <em>dependent</em>, but approximately <em>conditionally independent given Department</em>. A χ² test on a two-way table cannot detect this; only thinking about the causal structure, and measuring the confounder, can.</p>
+            </div>
+          </div>
+
+          <h3 class="top-gap">How causation is established</h3>
+          <ul>
+            <li><strong>Randomised experiments.</strong> If X is assigned at random, no confounder can be linked to it, so a dependence between X and F can be attributed to X.</li>
+            <li><strong>Stratifying or adjusting for confounders</strong>, as with Department above, when they are known and measured.</li>
+            <li><strong>Supporting evidence</strong>: the cause comes before the effect, there is a plausible mechanism, a dose–response pattern, and the result replicates in other data.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- CODE -->
+      <section id="code" class="part">
+        <div>
+          <h2>The code</h2>
+          <p>The core of the page, in plain JavaScript with no libraries. <code>script.js</code> contains these functions plus the charts.</p>
+<pre><code>// 1. Contingency table: one pass over the raw records
+function contingency(records) {                  // records = [[x, f], ...]
+  const xs = [], fs = [], xi = new Map(), fi = new Map();
+  for (const [x, f] of records) {
+    if (!xi.has(x)) { xi.set(x, xs.length); xs.push(x); }
+    if (!fi.has(f)) { fi.set(f, fs.length); fs.push(f); }
+  }
+  const N = xs.map(() =&gt; fs.map(() =&gt; 0));
+  for (const [x, f] of records) N[xi.get(x)][fi.get(f)]++;
+  return { xs, fs, N };
+}
+
+// 2. Frequencies, expected counts, chi-square, Cramér's V
+function analyse(N) {
+  const r = N.length, c = N[0].length;
+  const rowT = N.map(row =&gt; row.reduce((a, b) =&gt; a + b, 0));          // nᵢ·
+  const colT = N[0].map((_, j) =&gt; N.reduce((a, row) =&gt; a + row[j], 0)); // n·ⱼ
+  const n = rowT.reduce((a, b) =&gt; a + b, 0);
+  const joint = N.map(row =&gt; row.map(v =&gt; v / n));                    // fᵢⱼ
+  const fX = rowT.map(v =&gt; v / n), fF = colT.map(v =&gt; v / n);         // marginals
+  const condFgivenX = N.map((row, i) =&gt; row.map(v =&gt; v / rowT[i]));   // nᵢⱼ / nᵢ·
+  const condXgivenF = N.map(row =&gt; row.map((v, j) =&gt; v / colT[j]));   // nᵢⱼ / n·ⱼ
+  const E = N.map((row, i) =&gt; row.map((_, j) =&gt; rowT[i] * colT[j] / n));
+  let chi2 = 0;
+  for (let i = 0; i &lt; r; i++)
+    for (let j = 0; j &lt; c; j++) chi2 += (N[i][j] - E[i][j]) ** 2 / E[i][j];
+  const df = (r - 1) * (c - 1);
+  const p = chiSquareSF(chi2, df);                                     // P(χ²_df ≥ chi2)
+  const V = Math.sqrt(chi2 / (n * Math.min(r - 1, c - 1)));
+  return { rowT, colT, n, joint, fX, fF, condFgivenX, condXgivenF, E, chi2, df, p, V };
+}
+
+// 3. p-value: the χ² survival function is an upper incomplete gamma function
+//    P(χ²_k ≥ x) = Q(k/2, x/2) = Γ(k/2, x/2) / Γ(k/2)
+function chiSquareSF(x, k) {
+  if (x &lt;= 0) return 1;
+  const a = k / 2, y = x / 2;
+  return y &lt; a + 1 ? 1 - gammaPSeries(a, y)     // series converges fast here
+                   : gammaQContinuedFraction(a, y); // continued fraction (Lentz) here
+}
+function gammaPSeries(a, x) {                    // P(a,x) = e⁻ˣ xᵃ Σ xⁿ / (a(a+1)…(a+n)) / Γ(a)
+  let sum = 1 / a, term = sum, ap = a;
+  for (let n = 1; n &lt; 1000; n++) {
+    term *= x / ++ap; sum += term;
+    if (Math.abs(term) &lt; Math.abs(sum) * 1e-16) break;
+  }
+  return sum * Math.exp(-x + a * Math.log(x) - lnGamma(a));
+}
+function gammaQContinuedFraction(a, x) {
+  const TINY = 1e-300;
+  let b = x + 1 - a, c = 1 / TINY, d = 1 / b, h = d;
+  for (let i = 1; i &lt; 1000; i++) {
+    const an = -i * (i - a); b += 2;
+    d = an * d + b; if (Math.abs(d) &lt; TINY) d = TINY;
+    c = b + an / c; if (Math.abs(c) &lt; TINY) c = TINY;
+    d = 1 / d; const delta = d * c; h *= delta;
+    if (Math.abs(delta - 1) &lt; 1e-16) break;
+  }
+  return Math.exp(-x + a * Math.log(x) - lnGamma(a)) * h;
+}
+
+// 4. Permutation test: shuffle F, keep both margins, recount
+function permutationPValue(xCodes, fCodes, r, c, chi2Obs, B, rng) {
+  const f = Int32Array.from(fCodes);
+  let atLeast = 0;
+  for (let b = 0; b &lt; B; b++) {
+    for (let k = f.length - 1; k &gt; 0; k--) {     // Fisher–Yates shuffle
+      const m = Math.floor(rng() * (k + 1)); [f[k], f[m]] = [f[m], f[k]];
+    }
+    if (chi2FromCodes(xCodes, f, r, c) &gt;= chi2Obs - 1e-9) atLeast++;
+  }
+  return (atLeast + 1) / (B + 1);
+}</code></pre>
+          <p>The p-values agree with SciPy's <code>scipy.stats.chi2_contingency</code> (with <code>correction=False</code>) to about 12 significant digits on all the datasets on this page.</p>
+        </div>
+      </section>
+
+      <!-- CONCLUSIONS -->
+      <section id="conclusions" class="part">
+        <div>
+          <h2>Conclusions</h2>
+          <ul>
+            <li><strong>Titanic.</strong> Travel class and survival are strongly dependent: χ² = 190.4 with 3 degrees of freedom, p ≈ 5.0 × 10⁻⁴¹, Cramér's V = 0.29 (a moderate association). 62.5 % of first-class passengers survived against 25.2 % in third class and 24.0 % of the crew. The table shows association. Class is a plausible cause (cabin position, access to lifeboats), but it is mixed up with other variables such as sex and age ("women and children first"), so a causal claim needs those to be taken into account.</li>
+            <li><strong>Hair × eye colour.</strong> χ² = 138.3 with 9 degrees of freedom, p ≈ 2.3 × 10⁻²⁵, V = 0.28. The largest contribution is blond hair with blue eyes (94 people where 46.1 were expected), followed by blond hair with brown eyes (7 where 47.2 were expected). Here neither variable causes the other: both depend on a common cause, genetic ancestry.</li>
+            <li><strong>The method.</strong> The contingency table, its marginal and conditional frequencies, and the expected counts nᵢ· n·ⱼ / n are all built from the raw records. χ² measures the distance from independence, and the χ² distribution with (r − 1)(c − 1) degrees of freedom turns it into a p-value. The permutation test gives the same answer without relying on a large-sample approximation.</li>
+            <li><strong>Reading the result.</strong> A small p-value says the dependence is unlikely to be chance. A large p-value says the data are compatible with independence, not that independence is proven. χ² grows with n, so significance must be reported together with an effect size like Cramér's V, and the residuals show which cells carry the dependence.</li>
+            <li><strong>Association vs causality.</strong> Statistical dependence is symmetric and says nothing about mechanism. The Berkeley admissions data show how a strong, highly significant association can be produced entirely by a confounder and can even reverse when the confounder is controlled. Causal conclusions require randomisation or explicit causal reasoning about confounders, not a χ² test alone.</li>
+          </ul>
+          <h3 class="top-gap">Sources</h3>
+          <ul class="tight muted">
+            <li>K. Pearson (1900), "On the criterion that a given system of deviations…", <em>Philosophical Magazine</em> 50, 157–175.</li>
+            <li>P. J. Bickel, E. A. Hammel, J. W. O'Connell (1975), "Sex bias in graduate admissions: data from Berkeley", <em>Science</em> 187, 398–404.</li>
+            <li>Titanic counts: R dataset <code>Titanic</code> (British Board of Trade inquiry, 1912). Hair and eye colour: R dataset <code>HairEyeColor</code> (Snee, 1974).</li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <span>© <span data-year></span> Fikiremariyam Babu Yalew</span>
+        <a href="../../index.html#homeworks">← Back to homeworks</a>
+      </footer>
+    </main>
+  </div>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

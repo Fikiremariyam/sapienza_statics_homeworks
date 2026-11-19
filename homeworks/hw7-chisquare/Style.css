@@ -1,0 +1,138 @@
+/* =========================================
+   Homework 7 — Contingency tables and the chi-square test
+   Page-specific styles (the site theme lives in assets/css/theme.css)
+   ========================================= */
+
+/* sections without numbers: one full-width column */
+.hw7 .part { display: block; }
+.hw7 [hidden] { display: none !important; }
+
+.hw7-chart {
+  display: block;
+  width: 100%;
+  height: 260px;
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e7e2f3);
+  border-radius: var(--radius, 10px);
+}
+.hw7-chart.tall { height: 360px; }
+
+.hw7-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted, #6b6785);
+}
+.hw7-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.hw7-legend i { display: inline-block; width: 16px; height: 10px; border-radius: 3px; }
+
+.top-gap, h3.top-gap { margin-top: 22px; }
+ul.tight li { margin: 2px 0; }
+.formula.small { font-size: 13px; }
+
+/* tables */
+table.ctable { width: auto; min-width: min(100%, 520px); }
+table.ctable td, table.ctable th { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.ctable th:first-child, table.ctable td:first-child { text-align: left; }
+table.ctable .tot { font-weight: 600; background: var(--accent-soft, #f1eafe); }
+table.ctable thead th { vertical-align: bottom; }
+table.ctable .corner { font-weight: 500; color: var(--muted, #6b6785); font-size: 12px; }
+table.narrow { width: auto; min-width: 320px; }
+table caption { caption-side: bottom; text-align: left; padding-top: 8px; font-size: 13px; }
+
+table.oe td .o { display: block; font-weight: 600; font-family: var(--mono, monospace); }
+table.oe td .e { display: block; font-size: 12px; opacity: .8; }
+table.oe td .q { display: block; font-size: 12px; font-family: var(--mono, monospace); }
+
+/* tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tabs button {
+  border: 1px solid var(--line, #e7e2f3);
+  background: transparent;
+  color: inherit;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.tabs button.on {
+  background: var(--accent, #7c3aed);
+  border-color: var(--accent, #7c3aed);
+  color: #fff;
+}
+
+/* residual colour legend */
+.resid-legend {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  margin-top: 10px; font-size: 13px;
+}
+.resid-legend .bar {
+  display: inline-block; width: 180px; height: 12px; border-radius: 6px;
+  background: linear-gradient(90deg, rgba(219,39,119,.85), rgba(219,39,119,.1) 45%, rgba(37,99,235,.1) 55%, rgba(37,99,235,.85));
+}
+
+/* theory: little mosaic sketches */
+figure.idea { margin: 0; }
+.mini-mosaic {
+  display: flex; gap: 4px; height: 150px;
+  padding: 8px; border: 1px solid var(--line, #e7e2f3); border-radius: var(--radius, 10px);
+  background: var(--surface, #fff);
+}
+.mini-mosaic > div { display: flex; flex-direction: column; gap: 3px; }
+.mini-mosaic span { display: block; border-radius: 3px; }
+.mini-mosaic span:nth-child(1) { background: rgba(124, 58, 237, .30); }
+.mini-mosaic span:nth-child(2) { background: rgba(124, 58, 237, .75); }
+figure.idea figcaption { font-size: 13px; color: var(--muted, #6b6785); margin-top: 6px; }
+
+/* theory: degrees of freedom grid */
+.df-demo { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin: 16px 0; }
+.df-demo p { flex: 1 1 280px; margin: 0; }
+.df-grid { display: grid; grid-template-columns: repeat(4, 38px); gap: 4px; }
+.df-grid span {
+  height: 38px; display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; font-weight: 600;
+}
+.df-grid .free { background: var(--accent, #7c3aed); color: #fff; }
+.df-grid .fix { background: var(--accent-soft, #f1eafe); color: var(--muted, #6b6785); }
+
+/* interpretation */
+.verdict {
+  border-radius: var(--radius, 10px);
+  padding: 14px 18px;
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  border-left: 5px solid;
+}
+.verdict.dep { background: rgba(37, 99, 235, .08); border-color: #2563eb; }
+.verdict.ind { background: rgba(15, 157, 122, .08); border-color: #0f9d7a; }
+.warn {
+  border-radius: 8px; padding: 10px 14px; margin: 12px 0;
+  background: rgba(217, 119, 6, .1); border-left: 4px solid #d97706; font-size: 14px;
+}
+
+/* inputs */
+label.block { display: block; margin-bottom: 8px; }
+label.inline { display: inline-flex; align-items: center; gap: 6px; }
+#csv-text {
+  display: block; width: 100%; box-sizing: border-box; margin-top: 6px;
+  font-family: var(--mono, monospace); font-size: 13px;
+  border: 1px solid var(--line, #e7e2f3); border-radius: 8px; padding: 8px;
+  background: var(--surface, #fff); color: inherit;
+}
+#csv-msg.error { color: var(--accent-2, #db2777); }
+
+/* causality */
+.dag-row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
+.dag-row > div { flex: 1 1 320px; }
+.dag { flex: 0 1 380px; width: 100%; max-width: 420px; color: var(--ink, #1f1a33); }
+.dag .node { fill: var(--accent-soft, #f1eafe); stroke: var(--accent, #7c3aed); stroke-width: 1.5; }
+.dag .node.z { fill: rgba(217, 119, 6, .15); stroke: #d97706; }
+.dag text { fill: currentColor; }
+.dag .muted-text { fill: var(--muted, #6b6785); }
+
+.chart-grid figure { margin: 0; }
+.chart-grid figcaption { font-size: 13px; color: var(--muted, #6b6785); margin-top: 6px; }
